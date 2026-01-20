@@ -8,7 +8,6 @@ fetch:
     #!/usr/bin/env bash
     set -e
     echo "Fetching Roc reference docs from GitHub..."
-    mkdir -p docs
 
     # Fetch Builtin.roc
     curl -s https://raw.githubusercontent.com/roc-lang/roc/main/src/build/roc/Builtin.roc \
