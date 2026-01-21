@@ -1,6 +1,10 @@
 #!/bin/bash
 # Usage: ./rocgist.sh path/to/execute.roc [path/to/additional/file...]
 
+# recommended:
+# cp rocgist.sh ~/.local/bin/rocgist
+# then use rocgist instead of roc for automatic gist creation
+
 ROC_FILE="$1"
 shift  # Remove first arg, leaving additional files in $@
 STDOUT="STDOUT.txt"
