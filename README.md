@@ -23,15 +23,15 @@ e.g. `just install-roc`
 
 | Task | Description | Depends | Invokes |
 |------|-------------|---------|---------|
+| `check-nightly` | Check if Roc nightly is latest | `tools-install` | |
 | `fetch-docs` | Fetch Roc docs with ETag caching | | |
+| `fetch-roc` | Download Roc nightly to cache | `tools-install` | |
+| `install-roc` | Fetch and install Roc nightly | `tools-install` `fetch-roc` | `check-nightly` `fetch-roc` `prune-roc` |
 | `prune-roc` | Keep latest 3 nightly cache entries | | |
+| `skill-all` | Install skill in-repo and user-level | `skill-init` `skill-install` | |
 | `skill-init` | Initialize roc-language skill in-repo | | |
 | `skill-install` | Install roc-language skill user-level | | |
 | `tools-fetch` | Verify curl is available | | |
-| `check-nightly` | Check if Roc nightly is latest | `tools-install` | |
-| `fetch-roc` | Download Roc nightly to cache | `tools-install` | |
-| `install-roc` | Fetch and install Roc nightly | `tools-install` `fetch-roc` | `check-nightly` `fetch-roc` `prune-roc` |
-| `skill-all` | Install skill in-repo and user-level | `skill-init` `skill-install` | |
 | `tools-install` | Verify jq is available | `tools-fetch` | |
 | `update-docs` | Fetch docs, install user skill | `fetch-docs` `skill-install` | |
 
