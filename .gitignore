@@ -1,0 +1,17 @@
+# Roc-init cache (ETag caching for docs fetch)
+cache/
+
+# Local environment
+.env
+.envrc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
