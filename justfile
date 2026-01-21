@@ -14,7 +14,7 @@ curl_cmd := "curl -L -s -S"
 
 # Workflow Tasks (have dependencies or invocations)
 # ---
-# check-nightly  - Is installed roc roc-nightly? (tools-install)
+# check-nightly  - Check if installed Roc nightly is latest (tools-install)
 # fetch-roc      - Fetch roc-nightly to cache/ (tools-install)
 # install-roc    - Install roc to ~/.local (tools-install fetch-roc)
 # skill-all      - (skill-init skill-install)
