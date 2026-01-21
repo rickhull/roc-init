@@ -23,17 +23,17 @@ e.g. `just install-roc`
 
 | Task | Description | Depends | Invokes |
 |------|-------------|---------|---------|
-| `fetch-docs` | Fetch latest Roc reference docs to docs/ using ETag caching | | |
-| `prune-roc` | Prune Roc nightly cache to 3 most recent entries | | |
+| `fetch-docs` | Fetch Roc docs with ETag caching | | |
+| `prune-roc` | Keep latest 3 nightly cache entries | | |
 | `skill-init` | Initialize roc-language skill in-repo | | |
-| `skill-install` | Install roc-language skill to user-level | | |
+| `skill-install` | Install roc-language skill user-level | | |
 | `tools-fetch` | Verify curl is available | | |
-| `check-nightly` | Check if we have the latest Roc nightly | tools-install | |
-| `fetch-roc` | Fetch latest Roc nightly into cache/ | tools-install | |
-| `install-roc` | Fetch and install latest Roc nightly (skips if already up-to-date) | tools-install<br>fetch-roc | check-nightly<br>fetch-roc<br>prune-roc |
-| `skill-all` | Install skill both in-repo and user-level | skill-init<br>skill-install | |
+| `check-nightly` | Check if Roc nightly is latest | tools-install | |
+| `fetch-roc` | Download Roc nightly to cache | tools-install | |
+| `install-roc` | Fetch and install Roc nightly | tools-install<br>fetch-roc | check-nightly<br>fetch-roc<br>prune-roc |
+| `skill-all` | Install skill in-repo and user-level | skill-init<br>skill-install | |
 | `tools-install` | Verify jq is available | tools-fetch | |
-| `update-docs` | Fetch docs and install to user skill | fetch-docs<br>skill-install | |
+| `update-docs` | Fetch docs, install user skill | fetch-docs<br>skill-install | |
 
 ## Development Commands
 
