@@ -83,3 +83,211 @@ skill-all: skill-init skill-install
 
 # Fetch docs and install to user skill
 update-docs: fetch-docs skill-install
+
+#
+# Roc Nightly Management Tasks
+# =============================
+
+# fail unless curl is available
+tools-fetch:
+    #!/usr/bin/env bash
+    if ! command -v curl &> /dev/null; then
+        echo "Missing: curl"
+        echo "  curl: Install via package manager (e.g., pacman -S curl)"
+        exit 1
+    fi
+
+# fail unless jq is available
+tools-install: tools-fetch
+    #!/usr/bin/env bash
+    if ! command -v jq &> /dev/null; then
+        echo "Missing: jq"
+        echo "  jq: Install via package manager (e.g., pacman -S jq)"
+        exit 1
+    fi
+
+# Check if we have the latest Roc nightly
+check-nightly: tools-install
+    #!/usr/bin/env bash
+    set -e
+
+    # Get latest release info from GitHub API
+    release_info=$({{curl_cmd}} https://api.github.com/repos/roc-lang/nightlies/releases/latest)
+    tag_name=$(echo "$release_info" | jq -r '.tag_name')
+
+    if [ -z "$tag_name" ] || [ "$tag_name" = "null" ]; then
+        echo "Error: Could not fetch latest release info"
+        exit 1
+    fi
+
+    echo "Latest nightly: $tag_name"
+
+    # Check if roc is installed
+    if ! command -v roc &> /dev/null; then
+        echo "[X] Roc not installed"
+        exit 1
+    fi
+
+    current_version=$(roc version 2>&1 | head -1)
+    # Extract commit hash from tag (format: nightly-2026-January-15-41b76c3)
+    latest_commit=$(echo "$tag_name" | sed 's/.*-//')
+
+    if echo "$current_version" | grep -q "$latest_commit"; then
+        echo "[OK] Roc $tag_name already installed"
+        echo "  Current: $current_version"
+        exit 0
+    else
+        echo "[X] Update available"
+        echo "  Current: $current_version"
+        echo "  Latest:  $tag_name"
+        exit 1
+    fi
+
+# Fetch latest Roc nightly into cache/
+fetch-roc: tools-install
+    #!/usr/bin/env bash
+    set -e
+    cache_dir="cache/roc-nightly"
+    mkdir -p "$cache_dir"
+
+    # Get latest release info from GitHub API
+    release_info=$({{curl_cmd}} https://api.github.com/repos/roc-lang/nightlies/releases/latest)
+    tag_name=$(echo "$release_info" | jq -r '.tag_name')
+
+    if [ -z "$tag_name" ] || [ "$tag_name" = "null" ]; then
+        echo "Error: Could not fetch latest release info"
+        exit 1
+    fi
+
+    # Detect platform/arch for filename (best-effort, fail fast if unknown)
+    os_name=$(uname -s)
+    arch_name=$(uname -m)
+    case "$os_name" in
+        Linux) platform="linux" ;;
+        Darwin) platform="macos" ;;
+        *) echo "Error: Unsupported OS '$os_name' for Roc nightly install"; exit 1 ;;
+    esac
+    case "$arch_name" in
+        x86_64|amd64) arch="x86_64" ;;
+        arm64|aarch64) arch="arm64" ;;
+        *) echo "Error: Unsupported arch '$arch_name' for Roc nightly install"; exit 1 ;;
+    esac
+
+    # Extract date from tag (format: nightly-2026-January-15-41b76c3)
+    date_part=$(echo "$tag_name" | sed 's/nightly-//' | cut -d'-' -f1-3)
+    commit=$(echo "$tag_name" | sed 's/.*-//')
+
+    # Construct filename (format: roc_nightly-linux_x86_64-2026-01-15-41b76c3.tar.gz)
+    # Need to convert January -> 01, parse the date
+    month=$(echo "$date_part" | cut -d'-' -f2)
+    case "$month" in
+        January) month_num="01" ;;
+        February) month_num="02" ;;
+        March) month_num="03" ;;
+        April) month_num="04" ;;
+        May) month_num="05" ;;
+        June) month_num="06" ;;
+        July) month_num="07" ;;
+        August) month_num="08" ;;
+        September) month_num="09" ;;
+        October) month_num="10" ;;
+        November) month_num="11" ;;
+        December) month_num="12" ;;
+        *) echo "Error: Unrecognized month '$month' in tag '$tag_name'"; exit 1 ;;
+    esac
+
+    year=$(echo "$date_part" | cut -d'-' -f1)
+    day=$(echo "$date_part" | cut -d'-' -f3)
+    numeric_date="$year-$month_num-$day"
+
+    filename="roc_nightly-${platform}_${arch}-$numeric_date-$commit.tar.gz"
+    download_url="https://github.com/roc-lang/nightlies/releases/download/$tag_name/$filename"
+    tag_dir="$cache_dir/$tag_name"
+    tarball="$tag_dir/$filename"
+
+    if [ -f "$tarball" ]; then
+        echo "[OK] Cached: $tarball"
+    else
+        echo "Downloading $filename..."
+        mkdir -p "$tag_dir"
+        {{curl_cmd}} "$download_url" -o "$tarball"
+    fi
+
+    echo "$tag_name" > "$cache_dir/LATEST"
+    echo "[OK] Cached nightly: $tag_name"
+
+# Fetch and install latest Roc nightly (skips if already up-to-date)
+install-roc: tools-install fetch-roc
+    #!/usr/bin/env bash
+    set -e
+
+    # Check if we already have the latest version (exit early if so)
+    check_output=$(just check-nightly 2>&1 || true)
+    if echo "$check_output" | grep -q "[OK] Roc"; then
+        echo "$check_output" | grep "[OK] Roc"
+        exit 0
+    fi
+
+    cache_dir="cache/roc-nightly"
+    tag_name="${1:-}"
+    if [ -z "$tag_name" ]; then
+        if [ ! -f "$cache_dir/LATEST" ]; then
+            just fetch-roc
+        fi
+        tag_name=$(cat "$cache_dir/LATEST")
+    fi
+
+    tag_dir="$cache_dir/$tag_name"
+    tarball=$(ls "$tag_dir"/*.tar.gz 2>/dev/null | head -1)
+    if [ -z "$tarball" ]; then
+        echo "Error: No cached nightly for tag '$tag_name'"
+        echo "  Run: just fetch-roc"
+        exit 1
+    fi
+
+    echo "Installing $tag_name..."
+    tmpdir=$(mktemp -d -t roc-install 2>/dev/null || mktemp -d /tmp/roc-install.XXXXXX)
+    trap 'rm -rf "$tmpdir"' EXIT
+
+    echo "Extracting to {{install_root}}/bin..."
+    mkdir -p {{install_root}}/bin
+    tar -xzf "$tarball" -C "$tmpdir"
+
+    # Find the extracted directory (should be roc_nightly-linux_x86_64-DATE-HASH)
+    extracted_dir=$(find "$tmpdir" -maxdepth 1 -type d -name "roc_nightly-*" | head -1)
+
+    if [ -z "$extracted_dir" ]; then
+        echo "Error: Could not find extracted directory"
+        exit 1
+    fi
+
+    # Copy binaries
+    cp "$extracted_dir/roc" {{install_root}}/bin/
+    if [ -f "$extracted_dir/roc_language_server" ]; then
+        cp "$extracted_dir/roc_language_server" {{install_root}}/bin/
+    fi
+
+    # Cleanup
+    echo "[OK] Roc nightly installed to {{install_root}}/bin/roc"
+    echo ""
+    echo "Ensure {{install_root}}/bin is in your PATH:"
+    echo "  export PATH=\"{{install_root}}/bin:\$PATH\""
+    echo ""
+    {{install_root}}/bin/roc version
+    just prune-roc
+
+# Prune Roc nightly cache to 3 most recent entries
+prune-roc:
+    #!/usr/bin/env bash
+    set -e
+    cache_dir="cache/roc-nightly"
+    if [ ! -d "$cache_dir" ]; then
+        exit 0
+    fi
+    stale_dirs=$(ls -dt "$cache_dir"/nightly-* 2>/dev/null | tail -n +4)
+    if [ -z "$stale_dirs" ]; then
+        exit 0
+    fi
+    echo "$stale_dirs" | while read -r dir; do
+        rm -rf "$dir"
+    done
