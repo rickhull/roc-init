@@ -11,6 +11,7 @@ A **Roc** programming language template and learning environment. Roc is a moder
 just install-roc
 
 # Fetch latest documentation
+# Install user-level `roc-language` skill
 just update-docs
 
 # Run the application
@@ -40,7 +41,7 @@ e.g. `just install-roc`
 ### Building and Running
 - `roc run main.roc` - Run the main application
 - `roc build main.roc` - Build an executable
-- `roc test` - Run tests (in `*_test.roc` files)
+- `roc test` - Run tests (`expect` calls at the toplevel of `*.roc` files)
 
 ### Documentation Management
 - `just fetch-docs` - Download latest Roc reference documentation from GitHub with ETag caching
@@ -129,9 +130,14 @@ When working with Roc code in this repository, use the `roc-language` skill for 
 
 ### Setting Up Skills
 
-After fetching documentation, install the skill:
+Quick start: `just update-docs`
+
+This will fetch the latest docs and install a user-level (`~/.claude`) `roc-language` skill.
 
 ```bash
+# Fetch the latest docs, ETag caching
+just fetch-docs
+
 # Install to user-level (recommended - available in all repos)
 just skill-install
 
