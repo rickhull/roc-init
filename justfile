@@ -4,6 +4,29 @@
 install_root := env_var_or_default("HOME", "") + "/.local"
 curl_cmd := "curl -L -s -S"
 
+# Unit Tasks (no dependencies, no invocations)
+# ---
+# fetch-docs     - Fetch Roc reference docs with ETag cache
+# prune-roc      - Keep latest 3 Roc nightly cache entries
+# skill-init     - Initialize roc-language skill in-repo
+# skill-install  - Install roc-language skill to user-level
+# tools-fetch    - Verify curl is available
+
+# Workflow Tasks (have dependencies or invocations)
+# ---
+# check-nightly  - Is installed roc roc-nightly? (tools-install)
+# fetch-roc      - Fetch roc-nightly to cache/ (tools-install)
+# install-roc    - Install roc to ~/.local (tools-install fetch-roc)
+# skill-all      - (skill-init skill-install)
+# tools-install  - Verify jq is available (tools-fetch)
+# update-docs    - (fetch-docs skill-install)
+
+
+#
+# Unit Tasks
+# ==========
+
+
 # Fetch latest Roc reference docs to docs/ using ETag caching
 fetch-docs:
     #!/usr/bin/env bash
@@ -48,20 +71,21 @@ fetch-docs:
     echo "  - docs/Builtin.roc ($(wc -l < docs/Builtin.roc) lines)"
     echo "  - docs/all_syntax_test.roc ($(wc -l < docs/all_syntax_test.roc) lines)"
 
-# Install roc-language skill to user-level (~/.claude/skills/)
-skill-install:
+# Prune Roc nightly cache to 3 most recent entries
+prune-roc:
     #!/usr/bin/env bash
     set -e
-    echo "Installing roc-language skill to user-level..."
-    mkdir -p ~/.claude/skills/roc-language/references
-
-    cp docs/Builtin.roc         ~/.claude/skills/roc-language/references/
-    cp docs/all_syntax_test.roc ~/.claude/skills/roc-language/references/
-    cp docs/ROC_TUTORIAL.md     ~/.claude/skills/roc-language/references/
-    cp docs/ROC_TUTORIAL_CONDENSED.md ~/.claude/skills/roc-language/references/
-    cp docs/ROC_LANGREF_TUTORIAL.md   ~/.claude/skills/roc-language/references/
-
-    echo "  ✓ Installed to ~/.claude/skills/roc-language/references/"
+    cache_dir="cache/roc-nightly"
+    if [ ! -d "$cache_dir" ]; then
+        exit 0
+    fi
+    stale_dirs=$(ls -dt "$cache_dir"/nightly-* 2>/dev/null | tail -n +4)
+    if [ -z "$stale_dirs" ]; then
+        exit 0
+    fi
+    echo "$stale_dirs" | while read -r dir; do
+        rm -rf "$dir"
+    done
 
 # Initialize roc-language skill in-repo (.claude/skills/)
 skill-init:
@@ -78,15 +102,20 @@ skill-init:
 
     echo "  ✓ Installed to .claude/skills/roc-language/references/"
 
-# Install skill both in-repo and user-level
-skill-all: skill-init skill-install
+# Install roc-language skill to user-level (~/.claude/skills/)
+skill-install:
+    #!/usr/bin/env bash
+    set -e
+    echo "Installing roc-language skill to user-level..."
+    mkdir -p ~/.claude/skills/roc-language/references
 
-# Fetch docs and install to user skill
-update-docs: fetch-docs skill-install
+    cp docs/Builtin.roc         ~/.claude/skills/roc-language/references/
+    cp docs/all_syntax_test.roc ~/.claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL.md     ~/.claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL_CONDENSED.md ~/.claude/skills/roc-language/references/
+    cp docs/ROC_LANGREF_TUTORIAL.md   ~/.claude/skills/roc-language/references/
 
-#
-# Roc Nightly Management Tasks
-# =============================
+    echo "  ✓ Installed to ~/.claude/skills/roc-language/references/"
 
 # fail unless curl is available
 tools-fetch:
@@ -97,14 +126,11 @@ tools-fetch:
         exit 1
     fi
 
-# fail unless jq is available
-tools-install: tools-fetch
-    #!/usr/bin/env bash
-    if ! command -v jq &> /dev/null; then
-        echo "Missing: jq"
-        echo "  jq: Install via package manager (e.g., pacman -S jq)"
-        exit 1
-    fi
+
+#
+# Workflow Tasks
+# ==============
+
 
 # Check if we have the latest Roc nightly
 check-nightly: tools-install
@@ -142,6 +168,7 @@ check-nightly: tools-install
         echo "  Latest:  $tag_name"
         exit 1
     fi
+
 
 # Fetch latest Roc nightly into cache/
 fetch-roc: tools-install
@@ -276,18 +303,17 @@ install-roc: tools-install fetch-roc
     {{install_root}}/bin/roc version
     just prune-roc
 
-# Prune Roc nightly cache to 3 most recent entries
-prune-roc:
+# Install skill both in-repo and user-level
+skill-all: skill-init skill-install
+
+# fail unless jq is available
+tools-install: tools-fetch
     #!/usr/bin/env bash
-    set -e
-    cache_dir="cache/roc-nightly"
-    if [ ! -d "$cache_dir" ]; then
-        exit 0
+    if ! command -v jq &> /dev/null; then
+        echo "Missing: jq"
+        echo "  jq: Install via package manager (e.g., pacman -S jq)"
+        exit 1
     fi
-    stale_dirs=$(ls -dt "$cache_dir"/nightly-* 2>/dev/null | tail -n +4)
-    if [ -z "$stale_dirs" ]; then
-        exit 0
-    fi
-    echo "$stale_dirs" | while read -r dir; do
-        rm -rf "$dir"
-    done
+
+# Fetch docs and install to user skill
+update-docs: fetch-docs skill-install
