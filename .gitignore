@@ -1,6 +1,9 @@
 # Roc-init cache (ETag caching for docs fetch)
 cache/
 
+# In-repo Claude skills (auto-generated from docs/)
+.claude/
+
 # Local environment
 .env
 .envrc

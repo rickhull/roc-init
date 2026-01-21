@@ -5,7 +5,7 @@ install_root := env_var_or_default("HOME", "") + "/.local"
 curl_cmd := "curl -L -s -S"
 
 # Fetch latest Roc reference docs to docs/ using ETag caching
-fetch:
+fetch-docs:
     #!/usr/bin/env bash
     set -e
     cache_dir="cache/roc-docs"
@@ -47,3 +47,39 @@ fetch:
     fi
     echo "  - docs/Builtin.roc ($(wc -l < docs/Builtin.roc) lines)"
     echo "  - docs/all_syntax_test.roc ($(wc -l < docs/all_syntax_test.roc) lines)"
+
+# Install roc-language skill to user-level (~/.claude/skills/)
+skill-install:
+    #!/usr/bin/env bash
+    set -e
+    echo "Installing roc-language skill to user-level..."
+    mkdir -p ~/.claude/skills/roc-language/references
+
+    cp docs/Builtin.roc         ~/.claude/skills/roc-language/references/
+    cp docs/all_syntax_test.roc ~/.claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL.md     ~/.claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL_CONDENSED.md ~/.claude/skills/roc-language/references/
+    cp docs/ROC_LANGREF_TUTORIAL.md   ~/.claude/skills/roc-language/references/
+
+    echo "  ✓ Installed to ~/.claude/skills/roc-language/references/"
+
+# Initialize roc-language skill in-repo (.claude/skills/)
+skill-init:
+    #!/usr/bin/env bash
+    set -e
+    echo "Initializing roc-language skill in-repo..."
+    mkdir -p .claude/skills/roc-language/references
+
+    cp docs/Builtin.roc         .claude/skills/roc-language/references/
+    cp docs/all_syntax_test.roc .claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL.md     .claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL_CONDENSED.md .claude/skills/roc-language/references/
+    cp docs/ROC_LANGREF_TUTORIAL.md   .claude/skills/roc-language/references/
+
+    echo "  ✓ Installed to .claude/skills/roc-language/references/"
+
+# Install skill both in-repo and user-level
+skill-all: skill-init skill-install
+
+# Fetch docs and install to user skill
+update-docs: fetch-docs skill-install
