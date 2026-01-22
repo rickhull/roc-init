@@ -1,4 +1,4 @@
-# Roc Platform Development Guide
+# Zig-based Roc Platform Development Guide
 
 This covers development of Roc platforms using the "new Roc compiler" in Zig using the host ABI.
 
