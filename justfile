@@ -11,6 +11,7 @@ curl_cmd := "curl -L -s -S"
 # skill-init     - Initialize roc-language skill in-repo
 # skill-install  - Install roc-language skill to user-level
 # tools-fetch    - Verify curl is available
+# tools-install  - Verify jq, gzip, tar are available
 
 # Workflow Tasks (have dependencies or invocations)
 # ---
@@ -18,7 +19,7 @@ curl_cmd := "curl -L -s -S"
 # fetch-roc      - Fetch roc-nightly to cache/ (tools-install)
 # install-roc    - Install roc to ~/.local (tools-install fetch-roc)
 # skill-all      - (skill-init skill-install)
-# tools-install  - Verify jq is available (tools-fetch)
+# tools-install  - Verify jq, gzip, tar are available (tools-fetch)
 # update-docs    - (fetch-docs skill-install)
 
 
@@ -233,11 +234,28 @@ fetch-roc: tools-install
     tarball="$tag_dir/$filename"
 
     if [ -f "$tarball" ]; then
-        echo "[OK] Cached: $tarball"
-    else
+        # Validate cached tarball is actually a gzip file (try gzip -t first, more portable)
+        if ! gzip -t "$tarball" 2>/dev/null; then
+            echo "Warning: Cached tarball is corrupted, re-downloading..."
+            rm -f "$tarball"
+        else
+            echo "[OK] Cached: $tarball"
+        fi
+    fi
+
+    if [ ! -f "$tarball" ]; then
         echo "Downloading $filename..."
         mkdir -p "$tag_dir"
         {{curl_cmd}} "$download_url" -o "$tarball"
+
+        # Validate download succeeded
+        if ! gzip -t "$tarball" 2>/dev/null; then
+            echo "Error: Download failed - file is not a valid gzip archive"
+            echo "  URL: $download_url"
+            echo "  This may indicate the file doesn't exist for your platform"
+            rm -f "$tarball"
+            exit 1
+        fi
     fi
 
     echo "$tag_name" > "$cache_dir/LATEST"
@@ -306,12 +324,22 @@ install-roc: tools-install fetch-roc
 # Install skill both in-repo and user-level
 skill-all: skill-init skill-install
 
-# fail unless jq is available
+# fail unless jq, gzip, and tar are available
 tools-install: tools-fetch
     #!/usr/bin/env bash
     if ! command -v jq &> /dev/null; then
         echo "Missing: jq"
         echo "  jq: Install via package manager (e.g., pacman -S jq)"
+        exit 1
+    fi
+    if ! command -v gzip &> /dev/null; then
+        echo "Missing: gzip"
+        echo "  gzip: Install via package manager (e.g., pacman -S gzip)"
+        exit 1
+    fi
+    if ! command -v tar &> /dev/null; then
+        echo "Missing: tar"
+        echo "  tar: Install via package manager (e.g., pacman -S tar)"
         exit 1
     fi
 
