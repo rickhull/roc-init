@@ -18,6 +18,8 @@ just update-docs
 roc run main.roc
 ```
 
+**Editor Support:** Roc includes an experimental LSP server. Configure your editor to use `roc experimental-lsp` for features like auto-completion, go-to-definition, and diagnostics. See [LSP Setup](#language-server-protocol-lsp) below.
+
 ## Just Commands
 
 e.g. `just install-roc`
@@ -27,7 +29,6 @@ e.g. `just install-roc`
 | `check-nightly` | Check if Roc nightly is latest | `tools-install` | |
 | `fetch-docs` | Fetch Roc docs with ETag caching | | |
 | `fetch-roc` | Download Roc nightly to cache | `tools-install` | |
-| `install-lsp` | Install `~/.local/bin/roc_language_server` | | |
 | `install-roc` | Fetch and install Roc nightly | `tools-install` `fetch-roc` | `check-nightly` `fetch-roc` `prune-roc` |
 | `install-rocgist` | Install `~/.local/bin/rocgist` | | |
 | `install-skill` | Install `roc-language` skill (to `~/.claude` or `.claude`) | | |
@@ -54,12 +55,116 @@ e.g. `just install-roc`
 - `just install-skill local` - Install skill in-repo to `.claude/skills/` (project-specific)
 - `just update-docs` - One-command: fetch docs + install to user-level skill
 
-### Code Sharing
-- `just install-rocgist` - Install `rocgist` wrapper to `~/.local/bin`
-- `rocgist path/to/execute.roc [additional_files...]` - Run a Roc file and create a GitHub Gist with the code, stdout, and stderr
+### Code Sharing with rocgist
 
-### LSP
-- `just install-lsp` - Install `roc_language_server` wrapper to `~/.local/bin`
+The `rocgist` script runs a Roc file and creates a GitHub Gist with the code, stdout, and stderr.
+
+**Installation:**
+```bash
+just install-rocgist
+```
+
+**Usage:**
+```bash
+# Basic usage - run a file and create a gist
+rocgist main.roc
+
+# Include additional files in the gist
+rocgist solution.roc input.txt
+```
+
+**What it does:**
+1. Runs the specified `.roc` file with `roc`
+2. Captures stdout and stderr to `STDOUT.txt` and `STDERR.txt`
+3. Creates a GitHub Gist with:
+   - The source code file
+   - `STDOUT.txt` (program output)
+   - `STDERR.txt` any error messages)
+   - Any additional files you specify
+4. Prints the Gist URL
+
+**Requirements:**
+- `roc` must be installed and in PATH
+- `gh` (GitHub CLI) must be installed and authenticated
+
+---
+
+## Language Server Protocol (LSP)
+
+Roc includes an experimental LSP server that provides:
+- **Go to definition** - Jump to where functions/variables are defined
+- **Find references** - Find all uses of a function/variable
+- **Auto-completion** - Suggest completions as you type
+- **Hover information** - Show type signatures on hover
+- **Diagnostics** - Real-time error and warning highlighting
+- **Signature help** - Parameter hints while typing function calls
+
+**Usage:** Configure your editor to use `roc experimental-lsp` as the language server command.
+
+### Editor Configuration
+
+#### Emacs (including terminal)
+
+**Eglot** (built into Emacs 26+):
+```elisp
+(add-to-list 'eglot-server-programs '(roc-mode . ("roc" "experimental-lsp")))
+(add-hook 'roc-mode-hook 'eglot-ensure)
+```
+
+**lsp-mode**:
+```elisp
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection '("roc" "experimental-lsp"))
+                  :major-modes '(roc-mode)
+                  :server-id 'roc))
+(add-hook 'roc-mode-hook 'lsp-deferred)
+```
+
+#### Neovim
+
+Using `nvim-lspconfig`:
+```lua
+require('lspconfig').roc.setup({
+  cmd = { 'roc', 'experimental-lsp' },
+})
+```
+
+#### Helix
+
+In `~/.config/helix/languages.toml`:
+```toml
+[language-server.roc]
+command = "roc"
+args = ["experimental-lsp"]
+
+[[language]]
+name = "roc"
+language-servers = ["roc"]
+```
+
+#### VS Code
+
+Install the official Roc extension, or add to `settings.json`:
+```json
+{
+  "roc.languageServerPath": "roc",
+  "roc.languageServerArgs": ["experimental-lsp"]
+}
+```
+
+#### Zed
+
+Zed has built-in Roc support. If you need to configure it manually, add to `settings.json`:
+```json
+{
+  "lsp": {
+    "roc": {
+      "command": "roc",
+      "arguments": ["experimental-lsp"]
+    }
+  }
+}
+```
 
 ## Project Structure
 
@@ -68,7 +173,6 @@ roc-init/
 ├── main.roc              # Application entry point
 ├── justfile             # Build automation with just commands
 ├── rocgist              # Gist sharing script
-├── roc_language_server  # LSP wrapper script
 ├── docs/                # Authoritative Roc language documentation
 │   ├── Builtin.roc      # Complete built-in functions reference
 │   ├── all_syntax_test.roc  # All syntax examples

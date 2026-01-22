@@ -7,7 +7,6 @@ curl_cmd := "curl -L -s -S"
 # Unit Tasks (no dependencies, no invocations)
 # ---
 # fetch-docs      - Fetch Roc reference docs with ETag cache
-# install-lsp     - Install ~/.local/bin/roc_language_server
 # install-rocgist - Install ~/.local/bin/rocgist
 # install-skill   - Install roc-language skill (to ~/.claude or .claude)
 # prune-roc       - Keep latest 3 Roc nightly cache entries
@@ -70,26 +69,6 @@ fetch-docs:
     fi
     echo "  - docs/Builtin.roc ($(wc -l < docs/Builtin.roc) lines)"
     echo "  - docs/all_syntax_test.roc ($(wc -l < docs/all_syntax_test.roc) lines)"
-
-# Install ~/.local/bin/roc_language_server wrapper
-install-lsp:
-    #!/usr/bin/env bash
-    set -e
-
-    # Ensure roc is available
-    if ! command -v roc &> /dev/null; then
-        echo "Error: roc not found in PATH"
-        echo "  Run: just install-roc"
-        exit 1
-    fi
-
-    mkdir -p {{install_root}}/bin
-    cp roc_language_server {{install_root}}/bin/
-    chmod +x {{install_root}}/bin/roc_language_server
-    echo "[OK] Installed {{install_root}}/bin/roc_language_server"
-    echo ""
-    echo "Ensure {{install_root}}/bin is in your PATH:"
-    echo "  export PATH=\"{{install_root}}/bin:\$PATH\""
 
 # Install roc-language skill to user-level (~/.claude/skills/) or in-repo (.claude/skills/)
 # Usage: just install-skill [LOCATION]
@@ -348,9 +327,6 @@ install-roc: tools-install fetch-roc
 
     # Copy binaries
     cp "$extracted_dir/roc" {{install_root}}/bin/
-    if [ -f "$extracted_dir/roc_language_server" ]; then
-        cp "$extracted_dir/roc_language_server" {{install_root}}/bin/
-    fi
 
     # Cleanup
     echo "[OK] Roc nightly installed to {{install_root}}/bin/roc"
