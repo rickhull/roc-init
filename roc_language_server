@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Wrapper script for Roc LSP
+# Forwards all arguments to: roc experimental-lsp
+
+exec roc experimental-lsp "$@"

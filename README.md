@@ -27,14 +27,16 @@ e.g. `just install-roc`
 | `check-nightly` | Check if Roc nightly is latest | `tools-install` | |
 | `fetch-docs` | Fetch Roc docs with ETag caching | | |
 | `fetch-roc` | Download Roc nightly to cache | `tools-install` | |
+| `install-lsp` | Install ~/.local/bin/roc_language_server | | |
+| `install-project-skill` | Initialize roc-language skill in-repo | | |
 | `install-roc` | Fetch and install Roc nightly | `tools-install` `fetch-roc` | `check-nightly` `fetch-roc` `prune-roc` |
+| `install-rocgist` | Install ~/.local/bin/rocgist | | |
+| `install-skill` | Install roc-language skill user-level | | |
+| `install-skills` | Install skill in-repo and user-level | `install-project-skill` `install-skill` | |
 | `prune-roc` | Keep latest 3 nightly cache entries | | |
-| `skill-all` | Install skill in-repo and user-level | `skill-init` `skill-install` | |
-| `skill-init` | Initialize roc-language skill in-repo | | |
-| `skill-install` | Install roc-language skill user-level | | |
 | `tools-fetch` | Verify curl is available | | |
 | `tools-install` | Verify jq is available | `tools-fetch` | |
-| `update-docs` | Fetch docs, install user skill | `fetch-docs` `skill-install` | |
+| `update-docs` | Fetch docs, install user skill | `fetch-docs` `install-skill` | |
 
 ## Development Commands
 
@@ -50,13 +52,17 @@ e.g. `just install-roc`
   - Uses ETag caching to avoid unnecessary downloads
 
 ### Claude Code Skills
-- `just skill-install` - Install roc-language skill to `~/.claude/skills/` (user-level, available in all repos)
-- `just skill-init` - Initialize skill in `.claude/skills/` (in-repo, project-specific)
-- `just skill-all` - Install to both locations
+- `just install-skill` - Install roc-language skill to `~/.claude/skills/` (user-level, available in all repos)
+- `just install-project-skill` - Initialize skill in `.claude/skills/` (in-repo, project-specific)
+- `just install-skills` - Install to both locations
 - `just update-docs` - One-command: fetch docs + install to user-level skill
 
 ### Code Sharing
-- `./rocgist.sh path/to/execute.roc [additional_files...]` - Run a Roc file and create a GitHub Gist with the code, stdout, and stderr
+- `just install-rocgist` - Install `rocgist` wrapper to `~/.local/bin`
+- `rocgist path/to/execute.roc [additional_files...]` - Run a Roc file and create a GitHub Gist with the code, stdout, and stderr
+
+### LSP
+- `just install-lsp` - Install `roc_language_server` wrapper to `~/.local/bin`
 
 ## Project Structure
 
@@ -64,7 +70,8 @@ e.g. `just install-roc`
 roc-init/
 ├── main.roc              # Application entry point
 ├── justfile             # Build automation with just commands
-├── rocgist.sh           # Gist sharing script
+├── rocgist              # Gist sharing script
+├── roc_language_server  # LSP wrapper script
 ├── docs/                # Authoritative Roc language documentation
 │   ├── Builtin.roc      # Complete built-in functions reference
 │   ├── all_syntax_test.roc  # All syntax examples
@@ -139,13 +146,13 @@ This will fetch the latest docs and install a user-level (`~/.claude`) `roc-lang
 just fetch-docs
 
 # Install to user-level (recommended - available in all repos)
-just skill-install
+just install-skill
 
 # Or install in-repo only (project-specific)
-just skill-init
+just install-project-skill
 
 # Or both
-just skill-all
+just install-skills
 ```
 
 The skill copies documentation files directly (not via symlinks) to ensure they work correctly with Claude Code.

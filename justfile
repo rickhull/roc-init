@@ -6,21 +6,22 @@ curl_cmd := "curl -L -s -S"
 
 # Unit Tasks (no dependencies, no invocations)
 # ---
-# fetch-docs     - Fetch Roc reference docs with ETag cache
-# prune-roc      - Keep latest 3 Roc nightly cache entries
-# skill-init     - Initialize roc-language skill in-repo
-# skill-install  - Install roc-language skill to user-level
-# tools-fetch    - Verify curl is available
-# tools-install  - Verify jq is available
+# fetch-docs            - Fetch Roc reference docs with ETag cache
+# install-lsp           - Install ~/.local/bin/roc_language_server
+# install-project-skill - Initialize roc-language skill in-repo
+# install-rocgist       - Install ~/.local/bin/rocgist
+# install-skill         - Install roc-language skill to user-level
+# prune-roc             - Keep latest 3 Roc nightly cache entries
+# tools-fetch           - Verify curl is available
 
 # Workflow Tasks (have dependencies or invocations)
 # ---
 # check-nightly  - Check if installed Roc nightly is latest (tools-install)
 # fetch-roc      - Fetch roc-nightly to cache/ (tools-install)
 # install-roc    - Install roc to ~/.local (tools-install fetch-roc)
-# skill-all      - (skill-init skill-install)
+# install-skills - Install both skills (install-project-skill install-skill)
 # tools-install  - Verify jq is available (tools-fetch)
-# update-docs    - (fetch-docs skill-install)
+# update-docs    - Fetch docs and install to user skill (fetch-docs install-skill)
 
 
 #
@@ -72,6 +73,85 @@ fetch-docs:
     echo "  - docs/Builtin.roc ($(wc -l < docs/Builtin.roc) lines)"
     echo "  - docs/all_syntax_test.roc ($(wc -l < docs/all_syntax_test.roc) lines)"
 
+# Install ~/.local/bin/roc_language_server wrapper
+install-lsp:
+    #!/usr/bin/env bash
+    set -e
+
+    # Ensure roc is available
+    if ! command -v roc &> /dev/null; then
+        echo "Error: roc not found in PATH"
+        echo "  Run: just install-roc"
+        exit 1
+    fi
+
+    mkdir -p {{install_root}}/bin
+    cp roc_language_server {{install_root}}/bin/
+    chmod +x {{install_root}}/bin/roc_language_server
+    echo "[OK] Installed {{install_root}}/bin/roc_language_server"
+    echo ""
+    echo "Ensure {{install_root}}/bin is in your PATH:"
+    echo "  export PATH=\"{{install_root}}/bin:\$PATH\""
+
+# Initialize roc-language skill in-repo (.claude/skills/)
+install-project-skill:
+    #!/usr/bin/env bash
+    set -e
+    echo "Initializing roc-language skill in-repo..."
+    mkdir -p .claude/skills/roc-language/references
+
+    cp skills/roc-language/SKILL.md .claude/skills/roc-language/
+    cp docs/Builtin.roc         .claude/skills/roc-language/references/
+    cp docs/all_syntax_test.roc .claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL.md     .claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL_CONDENSED.md .claude/skills/roc-language/references/
+    cp docs/ROC_LANGREF_TUTORIAL.md   .claude/skills/roc-language/references/
+
+    echo "  ✓ Installed to .claude/skills/roc-language/references/"
+
+# Install ~/.local/bin/rocgist wrapper
+install-rocgist:
+    #!/usr/bin/env bash
+    set -e
+
+    # Ensure roc is available
+    if ! command -v roc &> /dev/null; then
+        echo "Error: roc not found in PATH"
+        echo "  Run: just install-roc"
+        exit 1
+    fi
+
+    # Ensure gh is available
+    if ! command -v gh &> /dev/null; then
+        echo "Error: gh (GitHub CLI) not found in PATH"
+        echo "  gh: Install via package manager (e.g., pacman -S github-cli)"
+        exit 1
+    fi
+
+    mkdir -p {{install_root}}/bin
+    cp rocgist {{install_root}}/bin/
+    chmod +x {{install_root}}/bin/rocgist
+    echo "[OK] Installed {{install_root}}/bin/rocgist"
+    echo ""
+    echo "Ensure {{install_root}}/bin is in your PATH:"
+    echo "  export PATH=\"{{install_root}}/bin:\$PATH\""
+
+# Install roc-language skill to user-level (~/.claude/skills/)
+install-skill:
+    #!/usr/bin/env bash
+    set -e
+    echo "Installing roc-language skill to user-level..."
+    mkdir -p ~/.claude/skills/roc-language/references
+
+    cp skills/roc-language/SKILL.md ~/.claude/skills/roc-language/
+    cp docs/Builtin.roc         ~/.claude/skills/roc-language/references/
+    cp docs/all_syntax_test.roc ~/.claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL.md     ~/.claude/skills/roc-language/references/
+    cp docs/ROC_TUTORIAL_CONDENSED.md ~/.claude/skills/roc-language/references/
+    cp docs/ROC_LANGREF_TUTORIAL.md   ~/.claude/skills/roc-language/references/
+
+    echo "  ✓ Installed to ~/.claude/skills/roc-language/references/"
+
 # Prune Roc nightly cache to 3 most recent entries
 prune-roc:
     #!/usr/bin/env bash
@@ -87,38 +167,6 @@ prune-roc:
     echo "$stale_dirs" | while read -r dir; do
         rm -rf "$dir"
     done
-
-# Initialize roc-language skill in-repo (.claude/skills/)
-skill-init:
-    #!/usr/bin/env bash
-    set -e
-    echo "Initializing roc-language skill in-repo..."
-    mkdir -p .claude/skills/roc-language/references
-
-    cp skills/roc-language/SKILL.md .claude/skills/roc-language/
-    cp docs/Builtin.roc         .claude/skills/roc-language/references/
-    cp docs/all_syntax_test.roc .claude/skills/roc-language/references/
-    cp docs/ROC_TUTORIAL.md     .claude/skills/roc-language/references/
-    cp docs/ROC_TUTORIAL_CONDENSED.md .claude/skills/roc-language/references/
-    cp docs/ROC_LANGREF_TUTORIAL.md   .claude/skills/roc-language/references/
-
-    echo "  ✓ Installed to .claude/skills/roc-language/references/"
-
-# Install roc-language skill to user-level (~/.claude/skills/)
-skill-install:
-    #!/usr/bin/env bash
-    set -e
-    echo "Installing roc-language skill to user-level..."
-    mkdir -p ~/.claude/skills/roc-language/references
-
-    cp skills/roc-language/SKILL.md ~/.claude/skills/roc-language/
-    cp docs/Builtin.roc         ~/.claude/skills/roc-language/references/
-    cp docs/all_syntax_test.roc ~/.claude/skills/roc-language/references/
-    cp docs/ROC_TUTORIAL.md     ~/.claude/skills/roc-language/references/
-    cp docs/ROC_TUTORIAL_CONDENSED.md ~/.claude/skills/roc-language/references/
-    cp docs/ROC_LANGREF_TUTORIAL.md   ~/.claude/skills/roc-language/references/
-
-    echo "  ✓ Installed to ~/.claude/skills/roc-language/references/"
 
 # fail unless curl is available
 tools-fetch:
@@ -329,7 +377,7 @@ install-roc: tools-install fetch-roc
     just prune-roc
 
 # Install skill both in-repo and user-level
-skill-all: skill-init skill-install
+install-skills: install-project-skill install-skill
 
 # fail unless jq is available
 tools-install: tools-fetch
@@ -341,4 +389,4 @@ tools-install: tools-fetch
     fi
 
 # Fetch docs and install to user skill
-update-docs: fetch-docs skill-install
+update-docs: fetch-docs install-skill
