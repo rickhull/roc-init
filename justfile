@@ -201,6 +201,11 @@ fetch-roc: tools-install
         *) echo "Error: Unsupported arch '$arch_name' for Roc nightly install"; exit 1 ;;
     esac
 
+    # Roc uses 'apple_silicon' instead of 'arm64' for macOS ARM builds
+    if [ "$platform" = "macos" ] && [ "$arch" = "arm64" ]; then
+        arch="apple_silicon"
+    fi
+
     # Extract date from tag (format: nightly-2026-January-15-41b76c3)
     date_part=$(echo "$tag_name" | sed 's/nightly-//' | cut -d'-' -f1-3)
     commit=$(echo "$tag_name" | sed 's/.*-//')
