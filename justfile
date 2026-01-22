@@ -328,6 +328,12 @@ install-roc: tools-install fetch-roc
     # Copy binaries
     cp "$extracted_dir/roc" {{install_root}}/bin/
 
+    # Copy darwin sysroot if present (required for macOS linking)
+    if [ -d "$extracted_dir/darwin" ]; then
+        rm -rf {{install_root}}/bin/darwin
+        cp -r "$extracted_dir/darwin" {{install_root}}/bin/
+    fi
+
     # Cleanup
     echo "[OK] Roc nightly installed to {{install_root}}/bin/roc"
     echo ""
