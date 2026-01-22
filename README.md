@@ -28,11 +28,9 @@ e.g. `just install-roc`
 | `fetch-docs` | Fetch Roc docs with ETag caching | | |
 | `fetch-roc` | Download Roc nightly to cache | `tools-install` | |
 | `install-lsp` | Install `~/.local/bin/roc_language_server` | | |
-| `install-project-skill` | Initialize `roc-language` skill in-repo | | |
 | `install-roc` | Fetch and install Roc nightly | `tools-install` `fetch-roc` | `check-nightly` `fetch-roc` `prune-roc` |
 | `install-rocgist` | Install `~/.local/bin/rocgist` | | |
-| `install-skill` | Install `roc-language` skill user-level | | |
-| `install-skills` | Install in-repo and user-level | `install-project-skill` `install-skill` | |
+| `install-skill` | Install `roc-language` skill (to `~/.claude` or `.claude`) | | |
 | `prune-roc` | Keep latest 3 nightly cache entries | | |
 | `tools-fetch` | Verify `curl` is available | | |
 | `tools-install` | Verify `jq` is available | `tools-fetch` | |
@@ -53,8 +51,7 @@ e.g. `just install-roc`
 
 ### Claude Code Skills
 - `just install-skill` - Install roc-language skill to `~/.claude/skills/` (user-level, available in all repos)
-- `just install-project-skill` - Initialize skill in `.claude/skills/` (in-repo, project-specific)
-- `just install-skills` - Install to both locations
+- `just install-skill local` - Install skill in-repo to `.claude/skills/` (project-specific)
 - `just update-docs` - One-command: fetch docs + install to user-level skill
 
 ### Code Sharing
@@ -149,10 +146,7 @@ just fetch-docs
 just install-skill
 
 # Or install in-repo only (project-specific)
-just install-project-skill
-
-# Or both
-just install-skills
+just install-skill local
 ```
 
 The skill copies documentation files directly (not via symlinks) to ensure they work correctly with Claude Code.
