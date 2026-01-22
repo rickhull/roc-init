@@ -27,15 +27,15 @@ e.g. `just install-roc`
 | `check-nightly` | Check if Roc nightly is latest | `tools-install` | |
 | `fetch-docs` | Fetch Roc docs with ETag caching | | |
 | `fetch-roc` | Download Roc nightly to cache | `tools-install` | |
-| `install-lsp` | Install ~/.local/bin/roc_language_server | | |
-| `install-project-skill` | Initialize roc-language skill in-repo | | |
+| `install-lsp` | Install `~/.local/bin/roc_language_server` | | |
+| `install-project-skill` | Initialize `roc-language` skill in-repo | | |
 | `install-roc` | Fetch and install Roc nightly | `tools-install` `fetch-roc` | `check-nightly` `fetch-roc` `prune-roc` |
-| `install-rocgist` | Install ~/.local/bin/rocgist | | |
-| `install-skill` | Install roc-language skill user-level | | |
-| `install-skills` | Install skill in-repo and user-level | `install-project-skill` `install-skill` | |
+| `install-rocgist` | Install `~/.local/bin/rocgist` | | |
+| `install-skill` | Install `roc-language` skill user-level | | |
+| `install-skills` | Install in-repo and user-level | `install-project-skill` `install-skill` | |
 | `prune-roc` | Keep latest 3 nightly cache entries | | |
-| `tools-fetch` | Verify curl is available | | |
-| `tools-install` | Verify jq is available | `tools-fetch` | |
+| `tools-fetch` | Verify `curl` is available | | |
+| `tools-install` | Verify `jq` is available | `tools-fetch` | |
 | `update-docs` | Fetch docs, install user skill | `fetch-docs` `install-skill` | |
 
 ## Development Commands
