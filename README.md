@@ -44,15 +44,23 @@ You can optionally install the skill at the project level with `just skill-insta
 
 ### Choose A Platform
 
-Your "hello world" Roc application requires a platform.  For the new Roc compiler, there are 3 "starter platforms" that are available:
+Your "hello world" Roc application requires a platform. For the new Roc compiler, there are 3 "starter platforms" that are available:
 
-* `roc-platform-template-zig`
-* `roc-platform-template-rust`
-* `basic-cli`
+| Platform | Source | Toolchain | Best For |
+|----------|--------|-----------|----------|
+| **Zig Template** | Remote (GitHub release) | None | App developers, quick start |
+| **Rust Template** | Remote (GitHub release) | None | App developers, quick start |
+| **Basic-CLI** | Local (build from source) | Rust toolchain | Real applications with full platform capabilities |
 
-Starting from a platform template (the first 2 options) is the easiest and quickest way to get started, but these platform templates are quite basic, providing Stdin, Stdout, Stderr, and not much else.
+**Quick Start (Zig or Rust Templates):**
+- Zero setup beyond `roc` compiler
+- Pre-built, stable releases
+- Start with `zig_template.roc` or `rust_template.roc`
 
-There is no release URL for the `basic-cli` platform for the new compiler (YET!), so you must build a specific git branch using a Rust toolchain.  This is more involved but provides a much more capable platform to build your Roc application against.
+**Advanced (Basic-CLI Local):**
+- Requires `cargo build --release` in `../basic-cli/`
+- Full platform source access
+- See [docs/PLATFORM_CHOICE.md](docs/PLATFORM_CHOICE.md) for detailed setup instructions
 
 ## Just Commands
 
