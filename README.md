@@ -28,7 +28,7 @@ In order to use "just commands" (from the `justfile`, like a `Makefile`), you ne
 
 ### Install Roc
 
-`just install-roc` will run some checks to make the tooling exists to:
+`just install-roc` will run some checks to ensure the tooling exists to:
 
 1. Download the latest roc-nightly release
 2. Extract the binaries in a temp dir
@@ -40,7 +40,7 @@ There is a claude-native skill provided that will read docs provided by this pro
 
 `just update-docs` will fetch the latest Roc docs and then install the skill at the user level: `~/.claude/skills/roc-language/`
 
-You can install the skill at the project level with `just skill-install local`, but this would put the skill in the `roc-init` project, so maybe not all that useful.
+You can optionally install the skill at the project level with `just skill-install local`, but this would put the skill in the `roc-init` project, so maybe not all that useful.
 
 ### Choose A Platform
 
@@ -49,6 +49,10 @@ Your "hello world" Roc application requires a platform.  For the new Roc compile
 * `roc-platform-template-zig`
 * `roc-platform-template-rust`
 * `basic-cli`
+
+Starting from a platform template (the first 2 options) is the easiest and quickest way to get started, but these platform templates are quite basic, providing Stdin, Stdout, Stderr, and not much else.
+
+There is no release URL for the `basic-cli` platform for the new compiler (YET!), so you must build a specific git branch using a Rust toolchain.  This is more involved but provides a much more capable platform to build your Roc application against.
 
 ## Just Commands
 
