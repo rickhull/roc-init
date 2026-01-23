@@ -1,6 +1,6 @@
-# Roc Platform Development: 3-Way Workflow
+# New Roc Application Development: 3 Starter Platforms
 
-This repository provides three different approaches to developing with Roc platforms, ranging from simple usage to advanced platform development.
+This repository provides three different approaches to developing applications against various Roc platforms.
 
 ## Overview
 
@@ -87,7 +87,9 @@ main! = |_args| {
 roc run rust_platform.roc
 ```
 
-## 3. Basic-CLI (Full-Featured - Local Development)
+## 3. Basic-CLI (Full-Featured - Local Build)
+
+> **Transitional Note:** Basic-cli requires building from source because pre-built releases for the new Zig-based compiler aren't available yet. Once basic-cli publishes new compiler releases, this workflow will be as simple as the templates—just point to a remote URL and run. The current setup complexity is temporary.
 
 **Capabilities (much more than templates):**
 - Full file system I/O (read/write files, directories)
@@ -119,14 +121,14 @@ main! = |_args| {
 **How it works:**
 - Roc loads platform from a local relative path
 - Platform must be built from source before running
-- Changes to platform code are immediately available
+- Provides complete platform capabilities for your applications
 
 **Requirements:**
 - Roc compiler
-- Rust toolchain (rustc, cargo)
+- Rust toolchain (rustc, cargo) *(transitional - won't be needed after releases)*
 - The `basic-cli` repository cloned at `../basic-cli/`
 
-**Setup:**
+**Setup (transitional - will be simplified after releases):**
 
 ```bash
 # From outside roc-init, clone the basic-cli platform repository
@@ -169,12 +171,12 @@ roc run basic-cli.roc # this points to ../basic-cli/platform/main.roc
 - ❌ Not suitable for most real applications
 
 **Local (Basic-CLI):**
-- ✅ **Full platform capabilities** (files, network, env, etc.)
+- ✅ **Full platform capabilities** for applications (files, network, env, etc.)
 - ✅ Production-ready for real applications
 - ✅ Complete standard library interface
-- ❌ Requires Rust toolchain
-- ❌ Must build from source
-- ❌ Slightly more complex setup
+- ❌ Requires Rust toolchain *(transitional - until releases are available)*
+- ❌ Must build platform from source *(transitional - until releases are available)*
+- ❌ More complex setup *(will match templates after releases)*
 
 ## Platform URLs Explained
 
