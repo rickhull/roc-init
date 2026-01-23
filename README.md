@@ -1,8 +1,8 @@
 # roc-init
 
-A **Roc** programming language template and learning environment. Roc is a modern functional programming language with strong static typing. This repository serves as a starting point for Roc projects, particularly for competitive programming (Advent of Code) and learning the language.
+A **Roc** programming language template and learning environment. [Roc](https://roc-lang.org/) is a modern functional programming language with strong static typing. This repository serves as a starting point for Roc projects, particularly for competitive programming (Advent of Code) and learning the language.
 
-**Important**: This project focuses on the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at roc-lang.org is outdated and refers to the old compiler. Always refer to the local `docs/` files or use the `roc-language` skill for authoritative syntax and API reference.
+**Important**: This project focuses on the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Always refer to the local `docs/` files or use the `roc-language` skill for authoritative syntax and API reference.
 
 ## Quick Start
 
@@ -36,7 +36,7 @@ In order to use "just commands" (from the `justfile`, like a `Makefile`), you ne
 
 ### Roc-language Skill
 
-There is a claude-native skill provided that will read docs provided by this project (`roc-init`) as well as from upstream Roc (`roc-lang/roc`).
+There is a claude-native [skill](skills/references/roc-language) provided that will read docs provided by this project (`roc-init`) as well as from upstream Roc (`roc-lang/roc`).
 
 `just update-docs` will fetch the latest Roc docs and then install the skill at the user level: `~/.claude/skills/roc-language/`
 
