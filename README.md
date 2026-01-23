@@ -2,7 +2,7 @@
 
 A **Roc** programming language template and learning environment. Roc is a modern functional programming language with strong static typing. This repository serves as a starting point for Roc projects, particularly for competitive programming (Advent of Code) and learning the language.
 
-**Important**: This codebase uses the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at roc-lang.org is outdated and refers to the old compiler. Always refer to the local `docs/` files or use the `roc-language` skill for authoritative syntax and API reference.
+**Important**: This project focuses on the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at roc-lang.org is outdated and refers to the old compiler. Always refer to the local `docs/` files or use the `roc-language` skill for authoritative syntax and API reference.
 
 ## Quick Start
 
@@ -15,10 +15,40 @@ just install-roc
 just update-docs
 
 # Run the application
-roc run main.roc
+roc run zig_template.roc # or rust_template.roc
 ```
 
 **Editor Support:** Roc includes an experimental LSP server. Configure your editor to use `roc experimental-lsp` for features like auto-completion, go-to-definition, and diagnostics. See [LSP Setup](#language-server-protocol-lsp) below.
+
+## Slow Start
+
+### Just Commands
+
+In order to use "just commands" (from the `justfile`, like a `Makefile`), you need to have `Just` installed.
+
+### Install Roc
+
+`just install-roc` will run some checks to make the tooling exists to:
+
+1. Download the latest roc-nightly release
+2. Extract the binaries in a temp dir
+3. Copy the binaries to ~/.local/bin (typically in a user's PATH)
+
+### Roc-language Skill
+
+There is a claude-native skill provided that will read docs provided by this project (`roc-init`) as well as from upstream Roc (`roc-lang/roc`).
+
+`just update-docs` will fetch the latest Roc docs and then install the skill at the user level: `~/.claude/skills/roc-language/`
+
+You can install the skill at the project level with `just skill-install local`, but this would put the skill in the `roc-init` project, so maybe not all that useful.
+
+### Choose A Platform
+
+Your "hello world" Roc application requires a platform.  For the new Roc compiler, there are 3 "starter platforms" that are available:
+
+* `roc-platform-template-zig`
+* `roc-platform-template-rust`
+* `basic-cli`
 
 ## Just Commands
 
@@ -170,15 +200,9 @@ Zed has built-in Roc support. If you need to configure it manually, add to `sett
 
 ```
 roc-init/
-├── main.roc              # Application entry point
 ├── justfile             # Build automation with just commands
 ├── rocgist              # Gist sharing script
 ├── docs/                # Authoritative Roc language documentation
-│   ├── Builtin.roc      # Complete built-in functions reference
-│   ├── all_syntax_test.roc  # All syntax examples
-│   ├── ROC_TUTORIAL*.md     # Learning materials
-│   ├── roc-advent-2025.md   # AoC 2025 guide
-│   └── AOC_2025_UPDATES.md  # Corrections to outdated docs
 ├── cache/               # ETag cached downloads (gitignored)
 │   ├── roc-docs/        # Cached documentation fetches
 │   └── roc-nightly/     # Cached Roc nightly builds
@@ -190,6 +214,21 @@ roc-init/
         └── roc-language/
             └── references/  (copies from docs/)
 ```
+
+## Documentation
+
+The `docs/` directory contains authoritative Roc language reference materials:
+
+| File | Description |
+|------|-------------|
+| [Builtin.roc](docs/Builtin.roc) | Complete built-in functions reference from Roc compiler |
+| [all_syntax_test.roc](docs/all_syntax_test.roc) | Comprehensive syntax examples from Roc test suite |
+| [ROC_TUTORIAL.md](docs/ROC_TUTORIAL.md) | Full Roc tutorial |
+| [ROC_TUTORIAL_CONDENSED.md](docs/ROC_TUTORIAL_CONDENSED.md) | Condensed Roc tutorial |
+| [ROC_LANGREF_TUTORIAL.md](docs/ROC_LANGREF_TUTORIAL.md) | Language reference tutorial |
+| [roc-advent-2025.md](docs/roc-advent-2025.md) | Advent of Code 2025 guide |
+| [AOC_2025_UPDATES.md](docs/AOC_2025_UPDATES.md) | Corrections to outdated AoC documentation |
+
 
 ## Roc Application Structure
 
