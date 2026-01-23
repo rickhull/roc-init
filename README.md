@@ -58,7 +58,7 @@ Your "hello world" Roc application requires a platform. For the new Roc compiler
 - Start with `zig_template.roc` or `rust_template.roc`
 
 **Advanced (Basic-CLI Local):**
-- Requires `cargo build --release` in `../basic-cli/`
+- Requires Rust toolchain, cloning `../basic-cli`, and running `./build.sh`
 - Full platform source access
 - See [docs/PLATFORM_CHOICE.md](docs/PLATFORM_CHOICE.md) for detailed setup instructions
 

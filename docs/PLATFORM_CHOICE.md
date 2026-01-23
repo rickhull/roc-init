@@ -89,9 +89,12 @@ main! = |_args| {
 # Clone the basic-cli platform repository
 git clone https://github.com/roc-lang/basic-cli ../basic-cli
 
-# Build the platform (this creates the platform binary/interface)
+# Switch to the migrate-zig-compiler branch (for new compiler support)
 cd ../basic-cli
-cargo build --release
+git checkout migrate-zig-compiler
+
+# Build the platform
+./build.sh
 
 # Return to this repo and run your app
 cd ../roc-init
