@@ -101,7 +101,7 @@ e.g. `just install-roc`
 
 ### Code Sharing with rocgist
 
-The `rocgist` script runs a Roc file and creates a GitHub Gist with the code, stdout, and stderr.
+The [`tools/rocgist`](tools/rocgist) shell script runs a Roc file and creates a GitHub Gist with the code, stdout, and stderr.
 
 **Installation:**
 ```bash
