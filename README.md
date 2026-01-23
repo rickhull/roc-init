@@ -38,7 +38,7 @@ In order to use "just commands" (from the `justfile`, like a `Makefile`), you ne
 
 ### Roc-language Skill
 
-There is a claude-native [skill](skills/references/roc-language) provided that will read docs provided by this project (`roc-init`) as well as from upstream Roc (`roc-lang/roc`).
+There is a claude-native [skill](skills/roc-language/) provided that will read docs provided by this project (`roc-init`) as well as from upstream Roc (`roc-lang/roc`).
 
 `just update-docs` will fetch the latest Roc docs and then install the skill at the user level: `~/.claude/skills/roc-language/`
 
