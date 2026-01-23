@@ -127,12 +127,13 @@ main! = |_args| {
 - The `basic-cli` repository cloned at `../basic-cli/`
 
 **Setup:**
+
 ```bash
-# Clone the basic-cli platform repository
-git clone https://github.com/roc-lang/basic-cli ../basic-cli
+# From outside roc-init, clone the basic-cli platform repository
+git clone https://github.com/roc-lang/basic-cli
 
 # Switch to the migrate-zig-compiler branch (for new compiler support)
-cd ../basic-cli
+cd basic-cli
 git checkout migrate-zig-compiler
 
 # Build the platform
@@ -140,14 +141,8 @@ git checkout migrate-zig-compiler
 
 # Return to this repo and run your app
 cd ../roc-init
-roc run basic-cli.roc
+roc run basic-cli.roc # this points to ../basic-cli/platform/main.roc
 ```
-
-**Why use this workflow?**
-- You're developing or modifying the platform itself
-- You need to debug platform-level issues
-- You want to add new host functions or platform capabilities
-- You're contributing to the basic-cli platform
 
 ## Comparison
 
@@ -157,7 +152,6 @@ roc run basic-cli.roc
 |----------|---------------------|
 | Learning Roc language basics | Zig or Rust template |
 | Simple scripts (stdin → stdout) | Zig or Rust template |
-| Competitive programming (simple I/O) | Zig or Rust template |
 | File I/O (read/write files) | Basic-CLI |
 | Network operations | Basic-CLI |
 | Working with directories | Basic-CLI |
@@ -222,9 +216,3 @@ app [main!] { pf: platform "https://.../rust-platform-...tar.zst" }
 ```
 
 The rest of your Roc code remains the same - only the platform declaration changes.
-
-## See Also
-
-- [platform-dev-guide.md](platform-dev-guide.md) - Detailed guide for platform developers
-- [ZIG_PLATFORM_GUIDE.md](ZIG_PLATFORM_GUIDE.md) - Zig-specific platform development
-- [ROC_TUTORIAL.md](ROC_TUTORIAL.md) - Roc language fundamentals
