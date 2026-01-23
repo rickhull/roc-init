@@ -1,8 +1,10 @@
 # roc-init
 
-A **Roc** programming language template and learning environment. [Roc](https://roc-lang.org/) is a modern functional programming language with strong static typing. This repository serves as a starting point for Roc projects, particularly for competitive programming (Advent of Code) and learning the language.
+A **Roc** programming language template and learning environment. [Roc](https://roc-lang.org/) is a modern functional programming language with strong static typing. This repository serves as a starting point for Roc projects that target the relatively-unsupported, bleeding-edge "new Roc compiler".
 
-**Important**: This project focuses on the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Always refer to the local `docs/` files or use the `roc-language` skill for authoritative syntax and API reference.
+## New Roc Compiler
+
+This project focuses on the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Always refer to the local `docs/` files or use the `roc-language` skill for authoritative syntax and API reference.
 
 ## Quick Start
 
