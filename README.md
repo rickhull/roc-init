@@ -26,7 +26,7 @@ roc run zig_template.roc # or rust_template.roc
 
 ### Just Commands
 
-In order to use "just commands" (from the `justfile`, like a `Makefile`), you need to have `Just` installed.
+In order to use "just commands" (from the `justfile`, like a `Makefile`), you need to have [Just](https://just.systems/) installed.
 
 ### Install Roc
 
