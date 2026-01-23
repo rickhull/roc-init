@@ -4,13 +4,25 @@ This repository provides three different approaches to developing with Roc platf
 
 ## Overview
 
-| Workflow | File | Platform Source | Toolchain Required | Use Case |
-|----------|------|-----------------|-------------------|----------|
-| **Zig Template** | `zig_template.roc` | Remote (GitHub release) | None | App developers using pre-built Zig platform |
-| **Rust Template** | `rust_platform.roc` | Remote (GitHub release) | None | App developers using pre-built Rust platform |
-| **Basic-CLI (Local)** | `basic-cli.roc` | Local (`../basic-cli/platform/main.roc`) | Rust toolchain | Platform developers extending/modifying the platform |
+| Workflow | File | Platform Source | Capabilities | Toolchain Required | Use Case |
+|----------|------|-----------------|--------------|-------------------|----------|
+| **Zig Template** | `zig_template.roc` | Remote (GitHub release) | stdin/stdout/stderr only | None | Learning Roc, simple scripts |
+| **Rust Template** | `rust_platform.roc` | Remote (GitHub release) | stdin/stdout/stderr only | None | Learning Roc, simple scripts |
+| **Basic-CLI** | `basic-cli.roc` | Local (`../basic-cli/platform/main.roc`) | Full platform (files, network, env, etc.) | Rust toolchain | Real applications |
 
-## 1. Zig Template (Trivial - Remote)
+## 1. Zig Template (Minimal - Remote)
+
+**Capabilities:**
+- `Stdout.line!` - Write strings to stdout with newline
+- `Stderr.line!` - Write strings to stderr with newline
+- `Stdin.line!` - Read a line from stdin (returns empty string on EOF)
+
+**Limitations:**
+- No file system access (read/write files)
+- No network I/O
+- No binary I/O
+- No time/date functions
+- Line-based text I/O only
 
 ```roc
 app [main!] { pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-zig/releases/download/0.6/2BfGn4M9uWJNhDVeMghGeXNVDFijMfPsmmVeo6M4QjKX.tar.zst" }
@@ -36,7 +48,21 @@ main! = |_args| {
 roc run zig_template.roc
 ```
 
-## 2. Rust Template (Trivial - Remote)
+## 2. Rust Template (Minimal - Remote)
+
+**Capabilities:**
+- `Stdout.line!` - Write strings to stdout with newline
+- `Stderr.line!` - Write strings to stderr with newline
+- `Stdin.line!` - Read a line from stdin (returns empty string on EOF)
+
+**Limitations:**
+- No file system access (read/write files)
+- No network I/O
+- No binary I/O
+- No time/date functions
+- Line-based text I/O only
+
+*Note: Similar capabilities to Zig template; choose based on your preference for Zig vs Rust ecosystems.*
 
 ```roc
 app [main!] { pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-rust/releases/download/0.1/H8GgQfvW5hwgAwbwRJ1Whmq3CAX3A5dGbZWHefB6NXtN.tar.zst" }
@@ -61,7 +87,23 @@ main! = |_args| {
 roc run rust_platform.roc
 ```
 
-## 3. Basic-CLI (Advanced - Local Development)
+## 3. Basic-CLI (Full-Featured - Local Development)
+
+**Capabilities (much more than templates):**
+- Full file system I/O (read/write files, directories)
+- Network operations
+- Environment variables
+- Command-line argument parsing
+- Time/date functions
+- Path manipulation
+- And more...
+
+**Why use this workflow?**
+- Building real applications that need file I/O
+- Working with directories or configuration files
+- Network operations
+- Any system programming beyond stdin/stdout
+- You need a complete, production-capable platform
 
 ```roc
 app [main!] { pf: platform "../basic-cli/platform/main.roc" }
@@ -114,12 +156,13 @@ roc run basic-cli.roc
 | Use Case | Recommended Workflow |
 |----------|---------------------|
 | Learning Roc language basics | Zig or Rust template |
-| Building a standalone application | Zig or Rust template |
-| Competitive programming (AoC, etc) | Zig or Rust template |
-| Contributing to Roc platform | Basic-CLI local |
-| Developing new host functions | Basic-CLI local |
-| Debugging platform-specific issues | Basic-CLI local |
-| Testing unreleased platform features | Basic-CLI local |
+| Simple scripts (stdin → stdout) | Zig or Rust template |
+| Competitive programming (simple I/O) | Zig or Rust template |
+| File I/O (read/write files) | Basic-CLI |
+| Network operations | Basic-CLI |
+| Working with directories | Basic-CLI |
+| Environment variables | Basic-CLI |
+| Real-world applications | Basic-CLI |
 
 ### Trade-offs
 
@@ -127,16 +170,17 @@ roc run basic-cli.roc
 - ✅ Zero setup beyond Roc compiler
 - ✅ Stable, tested releases
 - ✅ Cross-platform compatibility handled for you
-- ❌ Can't modify platform
-- ❌ Dependent on release cycle
+- ❌ **Minimal capabilities** (stdin/stdout/stderr only)
+- ❌ No file I/O, no network, no system access
+- ❌ Not suitable for most real applications
 
 **Local (Basic-CLI):**
-- ✅ Full platform source access
-- ✅ Immediate iteration on platform changes
-- ✅ Can add custom host functions
+- ✅ **Full platform capabilities** (files, network, env, etc.)
+- ✅ Production-ready for real applications
+- ✅ Complete standard library interface
 - ❌ Requires Rust toolchain
 - ❌ Must build from source
-- ❌ Higher complexity
+- ❌ Slightly more complex setup
 
 ## Platform URLs Explained
 
