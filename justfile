@@ -109,7 +109,7 @@ install-rocgist:
     fi
 
     mkdir -p {{install_root}}/bin
-    cp rocgist {{install_root}}/bin/
+    cp tools/rocgist {{install_root}}/bin/
     chmod +x {{install_root}}/bin/rocgist
     echo "[OK] Installed {{install_root}}/bin/rocgist"
     echo ""

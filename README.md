@@ -205,7 +205,8 @@ Zed has built-in Roc support. If you need to configure it manually, add to `sett
 ```
 roc-init/
 ├── justfile             # Build automation with just commands
-├── rocgist              # Gist sharing script
+├── tools/
+│   └── rocgist          # Gist sharing script
 ├── docs/                # Authoritative Roc language documentation
 ├── cache/               # ETag cached downloads (gitignored)
 │   ├── roc-docs/        # Cached documentation fetches
