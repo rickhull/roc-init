@@ -1,5 +1,16 @@
 # Roc Tutorial - New Compiler Syntax
 
+> ⚠️ **DEPRECATED** - This document has been superseded.
+>
+> **Use instead:**
+> - `mini-tutorial-new-compiler.md` - Primary tutorial (upstream)
+> - `MINI_TUTORIAL_AUGMENTS.md` - Advanced topics and practical examples
+> - `GOTCHAS.md` - Common pitfalls and gotchas
+>
+> **This file is kept for reference but will not be updated.**
+
+---
+
 > ⚠️ **This tutorial covers the NEW Roc compiler (nightly)**
 >
 > The official Roc website (roc-lang.org) currently documents the OLD compiler with different syntax.
@@ -52,8 +63,6 @@ describe_bool = |b|
 describe_bool(Bool.True)  # => "it's true"
 ```
 
-**Gotcha:** Use `Bool.True`/`Bool.False` for **creating values**, but `True`/`False` (capitalized, no prefix) in **pattern matching**.
-
 ### if/else Expressions
 
 The new compiler uses `if/else` expressions (NOT `if/then/else`):
@@ -86,8 +95,6 @@ classify =
     else
         "Other"
 ```
-
-**Gotcha:** No `if/then/else` exists. Always use `if/else`.
 
 ---
 
@@ -178,12 +185,7 @@ match u64_to_u8 {
 }
 ```
 
-**Gotcha:** Numbers don't have a generic `to_str`. Use the specific type's method:
-- `u8.to_str()`, `i64.to_str()`, etc.
-- Or use `Str.inspect(value)` for any value
-
 ---
-
 ## Strings
 
 Strings are UTF-8 encoded and immutable:
@@ -235,10 +237,7 @@ joined = ["a", "b", "c"].join_with(",")  # => "a,b,c"
 length = "hello".count_utf8_bytes()      # => 5
 ```
 
-**Gotcha:** Use `Str.inspect(value)` to convert any value to a string for debugging. The old `Num.to_str` doesn't exist.
-
 ---
-
 ## Lists
 
 ### Type Application Syntax
@@ -742,10 +741,7 @@ parse_and_double_manual = |str|
     }
 ```
 
-**Gotcha:** The `?` operator may not be fully implemented yet. Check `docs/all_syntax_test.roc` for current status.
-
 ---
-
 ## Effectful Functions
 
 Functions that perform side effects are marked with `!`:
@@ -779,166 +775,6 @@ log_and_add! = |a, b| {
     Stdout.line!("Adding ${a.to_str()} and ${b.to_str()}")
     a + b
 }
-```
-
----
-
-## Common Gotchas
-
-### 1. Type Application Syntax
-
-**OLD:** `List U8` (space, no parentheses)
-**NEW:** `List(U8)` (parentheses required)
-
-```roc
-# Correct
-bytes : List(U8) = [0, 1, 2]
-
-# Wrong
-# bytes : List U8 = [0, 1, 2]
-```
-
-### 2. if/else vs if/then/else
-
-**OLD:** `if/then/else` (doesn't exist in new compiler)
-**NEW:** `if/else`
-
-```roc
-# Correct
-result = if x > 0 "positive" else "non-positive"
-
-# Wrong
-# result = if x > 0 then "positive" else "non-positive"
-```
-
-### 3. Bool Values and Pattern Matching
-
-**Creating values:** Use `Bool.True` and `Bool.False` (lowercase t/f, with namespace)
-
-**Pattern matching:** Use bare `True` and `False` (capitalized, no namespace)
-
-```roc
-# Creating values
-is_valid = Bool.True    # Correct
-# is_valid = true       # Wrong
-
-# Pattern matching
-match is_valid {
-    True => "yes"       # Correct - capitalized, no prefix
-    False => "no"       # Correct
-}
-```
-
-**Key distinction:**
-- `Bool.True` = creates a Bool value (lowercase 't')
-- `True` = matches the tag in pattern matching (capitalized)
-
-### 4. Tag Creation: Local vs Module-Defined Types
-
-**Local type definitions** use bare tags everywhere:
-
-```roc
-# Correct - local type
-Color = [Red, Green, Blue]
-favorite = Red        # Bare tag for creation
-match favorite {
-    Red => "red"       # Bare tag for match
-}
-```
-
-**Module-defined types** need prefix to create, bare in patterns:
-
-```roc
-# Correct - module type
-result = Try.Ok(42)    # Need Try.Ok to create
-match result {
-    Ok(v) => "ok"      # Bare Ok in match
-}
-```
-
-### 5. String Conversion
-
-**OLD:** `Num.to_str(42)` (doesn't exist)
-**NEW:** `Str.inspect(42)` or specific type methods
-
-```roc
-# Correct
-num_str = 42.to_str()         # For specific types
-any_str = Str.inspect(42)     # For any value
-list_str = Str.inspect([1, 2, 3])  # => "[1, 2, 3]"
-
-# Wrong
-# num_str = Num.to_str(42)
-```
-
-### 6. Record Field Access
-
-Records use dot notation for field access:
-
-```roc
-person = { name: "Alice", age: 30 }
-
-name = person.name  # => "Alice"
-age = person.age    # => 30
-```
-
-### 7. Record Update Syntax
-
-```roc
-person = { name: "Alice", age: 30 }
-
-# Create updated copy
-older_person = { ..person, age: 31 }  # => { name: "Alice", age: 31 }
-```
-
-### 8. List Literals
-
-```roc
-# Empty list needs type annotation
-empty : List(I64) = []
-
-# Non-empty lists infer type
-numbers = [1, 2, 3]  # List(I64)
-```
-
-### 9. Function Calls
-
-```roc
-# All functions are called with parentheses
-result = my_func(arg1, arg2)
-
-# No standalone parentheses like Ruby
-# Not: result = my_func arg1, arg2
-```
-
-### 10. Return Statements
-
-Use `return` for early returns, otherwise the last expression is returned:
-
-```roc
-calculate = |x|
-    if x < 0 {
-        return 0  # Early return
-    }
-
-    x * 2  # Implicit return
-```
-
-### 11. Destructuring in Function Parameters
-
-```roc
-# Destructure tuples directly (type inferred)
-add_pair = |(a, b)| a + b
-
-# With explicit type annotation - tuple type uses parentheses
-add_pair_typed : (I64, I64) -> I64
-add_pair_typed = |(a, b)| a + b
-
-# Destructure records
-get_name = |{ name }| name  # Extract just the name field
-
-person = { name: "Alice", age: 30 }
-get_name(person)  # => "Alice"
 ```
 
 ---

@@ -1,6 +1,18 @@
 # Roc Tutorial - Condensed (New Compiler Syntax)
 
-> **Condensed reference** - For complete coverage, see `docs/Builtin.roc` and `docs/all_syntax_test.roc`
+> ⚠️ **DEPRECATED** - This document has been superseded.
+>
+> **Use instead:**
+> - `mini-tutorial-new-compiler.md` - Primary tutorial (upstream)
+> - `MINI_TUTORIAL_AUGMENTS.md` - Advanced topics and practical examples
+> - `GOTCHAS.md` - Common pitfalls and gotchas
+>
+> **The `roc-language` skill still uses this file for eager-loading.**
+> **This file is kept for that purpose but will not be updated.**
+
+---
+
+> **Condensed reference** - For complete coverage, see `docs/Builtin.roc`, `docs/all_syntax_test.roc`, and `MINI_TUTORIAL_AUGMENTS.md`
 
 ## Table of Contents
 
@@ -31,8 +43,6 @@ match is_active {
     False => "no"
 }
 ```
-
-**Gotcha:** Module types use prefix to create, bare tags in patterns. Local types use bare tags everywhere.
 
 ### if/else
 
@@ -85,8 +95,6 @@ to_u64 = u8.to_u64()           # Safe widening
 try_u8 = u64.to_u8_try()       # Try(U8, [OutOfRange, ..])
 wrap_u8 = u64.to_u8_wrap()     # Wraps around
 ```
-
-**Gotcha:** Use `Str.inspect(value)` or `num.to_str()` - `Num.to_str` doesn't exist.
 
 ---
 
@@ -331,105 +339,6 @@ main! = |_args| => {
     log_and_add!(1, 2)
     Ok({})
 }
-```
-
----
-
-## Common Gotchas
-
-### 1. Type Application Syntax
-
-**OLD:** `List U8` | **NEW:** `List(U8)`
-
-```roc
-bytes : List(U8) = [0, 1, 2]  # Correct
-```
-
-### 2. if/else vs if/then/else
-
-**OLD:** `if/then/else` doesn't exist. Use `if/else`.
-
-```roc
-result = if x > 0 "positive" else "non-positive"
-```
-
-### 3. Bool: Creation vs Matching
-
-```roc
-# Creating: use prefix
-is_valid = Bool.True    # Correct
-
-# Matching: bare tags
-match is_valid {
-    True => "yes"       # Correct - capitalized, no prefix
-    False => "no"
-}
-```
-
-### 4. Local vs Module Tag Creation
-
-```roc
-# Local type - bare tags everywhere
-Color = [Red, Green, Blue]
-fav = Red                # Bare for creation
-
-# Module type - prefix to create, bare to match
-result = Try.Ok(42)      # Need Try.Ok
-match result { Ok(v) => }  # Bare Ok
-```
-
-### 5. String Conversion
-
-**OLD:** `Num.to_str(42)` doesn't exist.
-
-```roc
-num_str = 42.to_str()        # For specific types
-any_str = Str.inspect(42)    # For any value
-```
-
-### 6. Record Field Access
-
-```roc
-person = { name: "Alice", age: 30 }
-name = person.name           # Dot notation
-```
-
-### 7. Record Update Syntax
-
-```roc
-person = { name: "Alice", age: 30 }
-older = { ..person, age: 31 }  # => { name: "Alice", age: 31 }
-```
-
-### 8. List Literals
-
-```roc
-empty : List(I64) = []       # Empty needs type annotation
-numbers = [1, 2, 3]          # Non-empty infers type
-```
-
-### 9. Return Statements
-
-```roc
-calculate = |x|
-    if x < 0 {
-        return 0             # Early return
-    }
-    x * 2                    # Implicit return
-```
-
-### 10. Destructuring in Parameters
-
-```roc
-# Tuple
-add_pair = |(a, b)| a + b
-
-# With explicit types
-add_pair_typed : (I64, I64) -> I64
-add_pair_typed = |(a, b)| a + b
-
-# Record
-get_name = |{ name }| name
 ```
 
 ---
