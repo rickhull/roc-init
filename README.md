@@ -17,7 +17,7 @@ just install-roc
 just update-docs
 
 # Run the application
-roc run main.roc
+roc main.roc
 ```
 
 **Editor Support:** Roc includes an experimental LSP server. Configure your editor to use `roc experimental-lsp` for features like auto-completion, go-to-definition, and diagnostics. See [LSP Setup](#language-server-protocol-lsp) below.
@@ -60,7 +60,7 @@ Zero setup beyond the `roc` compiler. Start coding immediately:
 
 ```bash
 # Run the template directly
-roc run main.roc
+roc main.roc
 ```
 
 **Capabilities:** `Stdout.line!`, `Stderr.line!`, `Stdin.line!` (text I/O only)
@@ -75,7 +75,7 @@ For real applications requiring file I/O, network operations, or system access:
 just basic-cli
 
 # Run your app
-roc run examples/basic-cli.roc
+roc examples/basic-cli.roc
 ```
 
 **Capabilities:** Files, directories, network, environment variables, paths, time/date, and more
@@ -130,7 +130,8 @@ e.g. `just install-roc`
 ## Development Commands
 
 ### Building and Running
-- `roc run main.roc` - Run the main application
+- `roc main.roc` - Run the main application
+- `roc run main.roc` - Same as above (`run` is default subcommand)
 - `roc build main.roc` - Build an executable
 - `roc test` - Run tests (`expect` calls at the toplevel of `*.roc` files)
 
