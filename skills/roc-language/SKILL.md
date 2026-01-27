@@ -21,12 +21,13 @@ version: 1.0.0
 
 Always read in full:
 
-- Condensed Tutorial: @references/ROC_TUTORIAL_CONDENSED.md
+- Mini Tutorial: @references/mini-tutorial-new-compiler.md (~700 lines, 28KB)
 
 ## Lazy Load
 
 Search or read as necessary:
 
-- Builtin Reference: references/Builtin.roc
-- Syntax Reference: references/all_syntax_test.roc
-- Full Tutorial: references/ROC_LANGREF_TUTORIAL.md
+- Mini Tutorial Augments: references/MINI_TUTORIAL_AUGMENTS.md (~1100 lines, 28KB)
+- Builtin Reference: references/Builtin.roc (~1500 lines, 48KB)
+- Syntax Reference: references/all_syntax_test.roc (~400 lines, 12KB)
+- Language Reference Tutorial: references/ROC_LANGREF_TUTORIAL.md (~2200 lines, 44KB)
