@@ -238,13 +238,11 @@ The `docs/` directory contains authoritative Roc language reference materials:
 
 | File | Description |
 |------|-------------|
+| [mini-tutorial-new-compiler.md](docs/mini-tutorial-new-compiler.md) | Primary tutorial for the new Zig-based compiler |
+| [MINI_TUTORIAL_AUGMENTS.md](docs/MINI_TUTORIAL_AUGMENTS.md) | Advanced topics augmenting the mini-tutorial |
 | [Builtin.roc](docs/Builtin.roc) | Complete built-in functions reference from Roc compiler |
 | [all_syntax_test.roc](docs/all_syntax_test.roc) | Comprehensive syntax examples from Roc test suite |
-| [ROC_TUTORIAL.md](docs/ROC_TUTORIAL.md) | Full Roc tutorial |
-| [ROC_TUTORIAL_CONDENSED.md](docs/ROC_TUTORIAL_CONDENSED.md) | Condensed Roc tutorial |
-| [ROC_LANGREF_TUTORIAL.md](docs/ROC_LANGREF_TUTORIAL.md) | Language reference tutorial |
-| [roc-advent-2025.md](docs/roc-advent-2025.md) | Advent of Code 2025 guide |
-| [AOC_2025_UPDATES.md](docs/AOC_2025_UPDATES.md) | Corrections to outdated AoC documentation |
+| [ROC_LANGREF_TUTORIAL.md](docs/ROC_LANGREF_TUTORIAL.md) | Comprehensive language reference tutorial |
 
 
 ## Roc Application Structure
