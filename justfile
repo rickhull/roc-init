@@ -6,14 +6,16 @@ curl_cmd := "curl -L -s -S"
 
 # Unit Tasks (no dependencies, no invocations)
 # ---
-# fetch-docs      - Fetch Roc reference docs with ETag cache
+# fetch-docs     - Fetch Roc reference docs with ETag cache
 # install-rocgist - Install ~/.local/bin/rocgist
 # install-skill   - Install roc-language skill (to ~/.claude or .claude)
 # prune-roc       - Keep latest 3 Roc nightly cache entries
 # tools-fetch     - Verify curl is available
+# tools-rust      - Verify rustc and cargo are available
 
 # Workflow Tasks (have dependencies or invocations)
 # ---
+# basic-cli      - Build basic-cli platform (tools-rust)
 # check-nightly  - Check if installed Roc nightly is latest (tools-install)
 # fetch-roc      - Fetch roc-nightly to cache/ (tools-install)
 # install-roc    - Install roc to ~/.local (tools-install fetch-roc)
@@ -97,14 +99,13 @@ install-rocgist:
     # Ensure roc is available
     if ! command -v roc &> /dev/null; then
         echo "Error: roc not found in PATH"
-        echo "  Run: just install-roc"
+        echo "  Try: just install-roc"
         exit 1
     fi
 
     # Ensure gh is available
     if ! command -v gh &> /dev/null; then
         echo "Error: gh (GitHub CLI) not found in PATH"
-        echo "  gh: Install via package manager (e.g., pacman -S github-cli)"
         exit 1
     fi
 
@@ -137,7 +138,18 @@ tools-fetch:
     #!/usr/bin/env bash
     if ! command -v curl &> /dev/null; then
         echo "Missing: curl"
-        echo "  curl: Install via package manager (e.g., pacman -S curl)"
+        exit 1
+    fi
+
+# fail unless rustc and cargo are available
+tools-rust:
+    #!/usr/bin/env bash
+    if ! command -v rustc &> /dev/null; then
+        echo "Missing: rustc"
+        exit 1
+    fi
+    if ! command -v cargo &> /dev/null; then
+        echo "Missing: cargo"
         exit 1
     fi
 
@@ -146,6 +158,42 @@ tools-fetch:
 # Workflow Tasks
 # ==============
 
+
+# Build basic-cli platform from source
+basic-cli: tools-rust
+    #!/usr/bin/env bash
+    set -e
+
+    basic_cli_dir="../basic-cli"
+
+    # Check if basic-cli directory exists
+    if [ ! -d "$basic_cli_dir" ]; then
+        # Try gh CLI first, fall back to SSH
+        if command -v gh; then
+            gh repo clone roc-lang/basic-cli "$basic_cli_dir"
+        else
+            git clone git@github.com:roc-lang/basic-cli "$basic_cli_dir"
+        fi
+    fi
+
+    cd "$basic_cli_dir"
+
+    # Check if we're on the migrate-zig-compiler branch
+    current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+    if [ "$current_branch" != "migrate-zig-compiler" ]; then
+        echo "Checking out migrate-zig-compiler branch..."
+        git checkout migrate-zig-compiler
+        git pull
+    fi
+
+    # Check if build.sh exists
+    if [ ! -f "./build.sh" ]; then
+        echo "Error: build.sh not found in $basic_cli_dir"
+        exit 1
+    fi
+
+    echo "Building basic-cli platform..."
+    ./build.sh
 
 # Check if we have the latest Roc nightly
 check-nightly: tools-install
@@ -348,7 +396,6 @@ tools-install: tools-fetch
     #!/usr/bin/env bash
     if ! command -v jq &> /dev/null; then
         echo "Missing: jq"
-        echo "  jq: Install via package manager (e.g., pacman -S jq)"
         exit 1
     fi
 
