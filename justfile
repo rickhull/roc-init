@@ -63,6 +63,19 @@ fetch-docs:
         exit 1
     fi
 
+    etag_file="$cache_dir/mini-tutorial-new-compiler.md.etag"
+    status=$({{curl_cmd}} https://raw.githubusercontent.com/roc-lang/roc/main/docs/mini-tutorial-new-compiler.md \
+        -o docs/mini-tutorial-new-compiler.md \
+        --etag-save "$etag_file" \
+        --etag-compare "$etag_file" \
+        -w "%{http_code}")
+    if [ "$status" = "200" ] || [ "$status" = "304" ]; then
+        echo "  ✓ docs/mini-tutorial-new-compiler.md ($status)"
+    else
+        echo "  ✗ Failed to fetch mini-tutorial-new-compiler.md (HTTP $status)"
+        exit 1
+    fi
+
     echo ""
     if [ "$status" = "304" ]; then
         echo "✓ Reference docs already up-to-date (cached)"
@@ -71,6 +84,7 @@ fetch-docs:
     fi
     echo "  - docs/Builtin.roc ($(wc -l < docs/Builtin.roc) lines)"
     echo "  - docs/all_syntax_test.roc ($(wc -l < docs/all_syntax_test.roc) lines)"
+    echo "  - docs/mini-tutorial-new-compiler.md ($(wc -l < docs/mini-tutorial-new-compiler.md) lines)"
 
 # Install roc-language skill to user-level (~/.claude/skills/) or in-repo (.claude/skills/)
 # Usage: just install-skill [LOCATION]
