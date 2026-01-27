@@ -1,6 +1,11 @@
 # cache for fetches; differing cache strategies within
 cache/
 
+# Roc reference docs (fetched via just fetch-docs, committed baselines exist)
+docs/Builtin.roc
+docs/all_syntax_test.roc
+docs/mini-tutorial-new-compiler.md
+
 # In-repo Claude skills (auto-generated from docs/)
 .claude/
 
