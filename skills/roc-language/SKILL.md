@@ -22,6 +22,7 @@ version: 1.0.0
 Always read in full:
 
 - Mini Tutorial: @references/mini-tutorial-new-compiler.md (~700 lines, 28KB)
+- Gotchas: @references/GOTCHAS.md (~450 lines, 12KB)
 
 ## Lazy Load
 
