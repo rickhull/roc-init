@@ -48,23 +48,67 @@ You can optionally install the skill at the project level with `just skill-insta
 
 Your Roc application requires a platform. For the new Roc compiler, there are 3 starter platforms available:
 
-| Platform | Source | Toolchain | Best For |
-|----------|--------|-----------|----------|
-| **Zig Template** | Remote (GitHub release) | None | App developers, quick start |
-| **Rust Template** | Remote (GitHub release) | None | App developers, quick start |
-| **Basic-CLI** | Local (build from source) | Rust toolchain | Real applications with full platform capabilities |
+| Platform | Source | Toolchain | Capabilities | Best For |
+|----------|--------|-----------|--------------|----------|
+| **Zig Template** | Remote (GitHub release) | None | stdin/stdout/stderr only | Learning, simple scripts |
+| **Rust Template** | Remote (GitHub release) | None | stdin/stdout/stderr only | Learning, simple scripts |
+| **Basic-CLI** | Local (automated setup) | Rust (for build) | Full platform (files, network, env) | Real applications |
 
-**Quick Start (Zig or Rust Templates):**
-- Zero setup beyond `roc` compiler
-- Pre-built, stable releases
-- Start with `zig_template.roc` or `rust_template.roc`
-- Best for: Learning Roc, simple scripts (stdin/stdout only)
+#### Quick Start: Zig or Rust Templates
 
-**Full-Featured (Basic-CLI Local):**
-- Requires Rust toolchain, cloning `../basic-cli`, and running `./build.sh`
-- Full platform capabilities for real applications
-- *Note: This build step is transitional—basic-cli will have pre-built releases once the new compiler support stabilizes*
-- See [docs/PLATFORM_CHOICE.md](docs/PLATFORM_CHOICE.md) for detailed setup instructions
+Zero setup beyond the `roc` compiler. Start coding immediately:
+
+```bash
+# Run the template directly
+roc run zig_template.roc   # or rust_template.roc
+```
+
+**Capabilities:** `Stdout.line!`, `Stderr.line!`, `Stdin.line!` (text I/O only)
+**Limitations:** No file I/O, no network, no system access
+
+#### Full-Featured: Basic-CLI
+
+For real applications requiring file I/O, network operations, or system access:
+
+```bash
+# One-command setup (clones and builds basic-cli)
+just basic-cli
+
+# Run your app
+roc run basic-cli.roc
+```
+
+**Capabilities:** Files, directories, network, environment variables, paths, time/date, and more
+
+**How it works:** The `just basic-cli` command:
+1. Clones `roc-lang/basic-cli` to `../basic-cli/` (if not present)
+2. Checks out the `migrate-zig-compiler` branch
+3. Builds the platform with `./build.sh`
+4. Creates `basic-cli.roc` pointing to the local platform
+
+*Note: The build step is transitional—once basic-cli publishes pre-built releases for the new compiler, this will be as simple as the remote templates.*
+
+#### When to use each platform
+
+| Use Case | Recommended |
+|----------|-------------|
+| Learning Roc basics | Zig or Rust template |
+| Simple scripts (stdin → stdout) | Zig or Rust template |
+| File I/O, configuration files | Basic-CLI |
+| Network operations | Basic-CLI |
+| Real-world applications | Basic-CLI |
+
+#### Switching platforms
+
+Change the platform URL in your app's header—no other code changes needed:
+
+```roc
+# Remote template
+app [main!] { pf: platform "https://github.com/.../zig-platform-...tar.zst" }
+
+# Local basic-cli
+app [main!] { pf: platform "../basic-cli/platform/main.roc" }
+```
 
 ## Just Commands
 
