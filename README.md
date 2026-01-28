@@ -26,7 +26,7 @@ roc run main.roc
 roc build main.roc && ./main
 ```
 
-*Tip: [`main.roc`](main.roc) is a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).*
+**Tip:** [`main.roc`](main.roc) is a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).
 
 ### Editor Support ###
 
@@ -36,9 +36,7 @@ Roc includes an experimental LSP server. Configure your editor to use `roc exper
 
 ### Nix Users
 
-Clone [`roc-lang/roc`](https://github.com/roc-lang/roc) and from within: `nix develop ./src` targeting [`src/flake.nix`](https://github.com/roc-lang/roc/blob/main/src/flake.nix).
-
-Otherwise:
+**For Nix users:** clone [`roc-lang/roc`](https://github.com/roc-lang/roc) and from within: `nix develop ./src` targeting [`src/flake.nix`](https://github.com/roc-lang/roc/blob/main/src/flake.nix).  **Otherwise:**
 
 ### Just Commands
 
