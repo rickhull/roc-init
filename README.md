@@ -17,8 +17,16 @@ just install-roc
 just update-docs
 
 # Run the application
-roc [`main.roc`](main.roc)
+roc main.roc
+
+# Explicitly run the application; same behavior
+roc run main.roc
+
+# Build, then run
+roc build main.roc && ./main
 ```
+
+*Tip: [`main.roc`](main.roc) is a symlink to [`examples/zig-template.roc`](examples/zig-template.roc).*
 
 ### Editor Support ###
 
@@ -63,10 +71,9 @@ Your Roc application needs a platform for I/O. Two immediate options:
 
 Just run `roc main.roc` to start with the default (Zig) built-in template.
 `main.roc` is a symlink to [`examples/zig-template.roc`](examples/zig-template.roc).
-If you prefer Rust to Zig, try `roc examples/rust-template.roc`; same behavior.
+If you prefer Rust to Zig, try `roc examples/rust-template.roc`: same behavior.
 
-To access files or the network, you need [`basic-cli`](https://github.com/roc-lang/basic-cli);
-run `just basic-cli` to build it, and then `roc examples/basic-cli.roc` to run against it.
+To access files or the network, you need [`basic-cli`](https://github.com/roc-lang/basic-cli). Run `just basic-cli` to build the platform, and then `roc examples/basic-cli.roc` to run against it.
 
 *See [Platform Details](#platform-details) below for more information.*
 
