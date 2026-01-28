@@ -20,9 +20,17 @@ just update-docs
 roc main.roc
 ```
 
-**Editor Support:** Roc includes an experimental LSP server. Configure your editor to use `roc experimental-lsp` for features like auto-completion, go-to-definition, and diagnostics. See [LSP Setup](#language-server-protocol-lsp) below.
+### Editor Support ###
+
+Roc includes an experimental LSP server. Configure your editor to use `roc experimental-lsp` for features like auto-completion, go-to-definition, and diagnostics. See [LSP Setup](#language-server-protocol-lsp) below.
 
 ## Slow Start
+
+### Nix Users
+
+Clone [`roc-lang/roc`](https://github.com/roc-lang/roc) and from within: `nix develop ./src` targeting [`src/flake.nix`](https://github.com/roc-lang/roc/blob/main/src/flake.nix).
+
+Otherwise:
 
 ### Just Commands
 
