@@ -395,25 +395,6 @@ Run: `roc test/platform.roc`
 
 ---
 
-## Remaining Questions
-
-### Not Yet Tested
-
-1. **Import behavior**
-   - "as well as all the files they `import`" - what does this mean?
-   - Do top-level expects in imported modules run?
-   - Circular imports?
-
-3. **Performance**
-   - Exact timing for different test loads
-   - Caching behavior
-
-4. **Platform-specific**
-   - Can `roc test` work at all in platform projects?
-   - Are there file structure constraints?
-
----
-
 ## Conclusions
 
 1. **Complete asymmetry:** `roc test` runs top-level pure expects only; `roc run` runs in-function expects (pure or hosted)
@@ -426,6 +407,6 @@ Run: `roc test/platform.roc`
 
 ---
 
-**Test Files:** `examples/expect/roc-{test,run}-{pos,neg}.roc`
+**Test Files:** `examples/expect/roc-{test,run}-{positive,negative,refused}.roc` + `runtime_assertion.roc`
 **Last Updated:** 2025-01-27
 **Status:** ✅ Core behavior confirmed
