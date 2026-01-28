@@ -3,12 +3,13 @@
 # Configuration
 install_root := env_var_or_default("HOME", "") + "/.local"
 curl_cmd := "curl -L -s -S"
+skill_name := "roc-language"
 
 # Unit Tasks (no dependencies, no invocations)
 # ---
 # fetch-docs     - Fetch Roc reference docs with ETag cache
 # install-rocgist - Install ~/.local/bin/rocgist
-# install-skill   - Install roc-language skill (to ~/.claude or .claude)
+# install-skill   - Install {{skill_name}} skill (to ~/.claude or .claude)
 # prune-roc       - Keep latest 3 Roc nightly cache entries
 # tools-fetch     - Verify curl is available
 # tools-rust      - Verify rustc and cargo are available
@@ -86,7 +87,7 @@ fetch-docs:
     echo "  - docs/all_syntax_test.roc ($(wc -l < docs/all_syntax_test.roc) lines)"
     echo "  - docs/mini-tutorial-new-compiler.md ($(wc -l < docs/mini-tutorial-new-compiler.md) lines)"
 
-# Install roc-language skill to user-level (~/.claude/skills/) or in-repo (.claude/skills/)
+# Install {{skill_name}} skill to user-level (~/.claude/skills/) or in-repo (.claude/skills/)
 # Usage: just install-skill [LOCATION]
 #   LOCATION (optional): ~, local, project, or repo (default: ~)
 install-skill location="~":
@@ -95,15 +96,29 @@ install-skill location="~":
 
     if [[ "{{location}}" == "local" ]] || [[ "{{location}}" == "project" ]] || [[ "{{location}}" == "repo" ]]; then
         dest=".claude"
-        echo "Installing roc-language skill in-repo..."
+        echo "Installing {{skill_name}} skill in-repo..."
     else
         dest="{{location}}/.claude"
-        echo "Installing roc-language skill to {{location}}/.claude..."
+        echo "Installing {{skill_name}} skill to {{location}}/.claude..."
     fi
 
-    mkdir -p "$dest/skills"
-    cp -rL skills/roc-language "$dest/skills/"
-    echo "  ✓ Installed to $dest/skills/roc-language/"
+    skill_dir="$dest/skills/{{skill_name}}"
+    refs_dir="$skill_dir/references"
+
+    mkdir -p "$refs_dir"
+
+    # Copy skill definition
+    cp SKILL.md "$skill_dir/"
+
+    # Copy documentation files from docs/ to references/
+    cp docs/mini-tutorial-new-compiler.md "$refs_dir/"
+    cp docs/GOTCHAS.md "$refs_dir/"
+    cp docs/MINI_TUTORIAL_AUGMENTS.md "$refs_dir/"
+    cp docs/Builtin.roc "$refs_dir/"
+    cp docs/all_syntax_test.roc "$refs_dir/"
+    cp docs/ROC_LANGREF_TUTORIAL.md "$refs_dir/"
+
+    echo "  ✓ Installed to $skill_dir/"
 
 # Install ~/.local/bin/rocgist wrapper
 install-rocgist:

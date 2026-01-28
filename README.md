@@ -4,7 +4,7 @@ This project provides tools for getting your first [**Roc**](https://roc-lang.or
 
 ## New Roc Compiler
 
-The new Roc compiler is implemented in [Zig](https://ziglang.org/), replacing [Rust](https://www.rust-lang.org/)'s role in the old Roc compiler.  Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Not only has the compiler changed but also some language fundamentals. Always refer to the local [`docs/`](docs/) files or use the [`roc-language`](skills/roc-language/) skill for authoritative syntax and API reference.
+The new Roc compiler is implemented in [Zig](https://ziglang.org/), replacing [Rust](https://www.rust-lang.org/)'s role in the old Roc compiler.  Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Not only has the compiler changed but also some language fundamentals. Always refer to the local [`docs/`](docs/) files or use the [`roc-language` skill](SKILL.md) for authoritative syntax and API reference.
 
 ## Quick Start
 
@@ -52,7 +52,7 @@ In order to use "just commands" (from the [`justfile`](justfile), like a `Makefi
 
 ### Roc-language Skill
 
-There is a claude-native [skill](skills/roc-language/) provided that will read docs provided by this project (`roc-init`) as well as from upstream [roc-lang/roc](https://github.com/roc-lang/roc).
+There is a claude-native [skill](SKILL.md) provided that will read docs provided by this project (`roc-init`) as well as from upstream [roc-lang/roc](https://github.com/roc-lang/roc).
 
 `just update-docs` will fetch the latest Roc docs and then install the skill at the user level: `~/.claude/skills/roc-language/`
 
@@ -227,6 +227,7 @@ Zed has built-in Roc support. If you need to configure it manually, add to `sett
 
 ```
 roc-init/
+├── SKILL.md             # roc-language skill definition for Claude Code
 ├── justfile             # Build automation with just commands
 ├── main.roc -> examples/zig-platform.roc  (symlink)
 ├── tools/
@@ -236,12 +237,9 @@ roc-init/
 │   ├── zig-platform.roc # Zig platform template
 │   ├── rust-platform.roc # Rust platform template
 │   └── expect/          # Comprehensive expect behavior examples
-├── cache/               # ETag cached downloads (gitignored)
-│   ├── roc-docs/        # Cached documentation fetches
-│   └── roc-nightly/     # Cached Roc nightly builds
-└── skills/              # Claude Code skills
-    └── roc-language/
-        └── references/ -> ../../docs  (symlink)
+└── cache/               # ETag cached downloads (gitignored)
+    ├── roc-docs/        # Cached documentation fetches
+    └── roc-nightly/     # Cached Roc nightly builds
 ```
 
 ## Documentation
@@ -319,7 +317,7 @@ just install-skill
 just install-skill local
 ```
 
-The skill copies documentation files directly (not via symlinks) to ensure they work correctly with Claude Code.
+The skill copies documentation files directly from `docs/` to the installation destination. Each run of `install-skill` copies the current versions of the 6 reference files needed by the skill.
 
 **Important**: If you see examples using old syntax like `Num.to_str`, they are likely outdated. The new compiler uses `Str.inspect` instead.
 
@@ -407,6 +405,5 @@ Some files in `docs/` track known issues with outdated documentation:
 
 ## Notes
 
-- `skills/roc-language/references` is a symlink to `docs/` (for in-repo development)
-- When installing skills, files are copied directly (not symlinked) to work correctly with Claude Code
+- [`SKILL.md`](SKILL.md) is the skill definition; `install-skill` copies it with docs from `docs/` to the installation destination
 - The `cache/` directory is gitignored and stores ETag-cached downloads to avoid unnecessary network requests
