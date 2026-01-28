@@ -32,6 +32,7 @@ We performed exploratory testing to answer: **How does `expect` behave in differ
 | `examples/expect/roc-run-negative.roc` | `roc run` | Runtime, show errors | Stops at first ❌ |
 | `examples/expect/roc-run-negative-skipped.roc` | `roc run` | Runtime: skipped test | Block failure (run in isolation) ⏭️ |
 | `examples/expect/roc-run-refused.roc` | `roc run` | Runtime: refused | Top-level pure expects ignored 🤔 |
+| `examples/expect/runtime_assertion.roc` | `build --opt` | Optimized builds | Expect still fires ⚠️ (opt not implemented) |
 
 ---
 
@@ -194,10 +195,23 @@ expect add(1, 2) == 100  # Wrong! Should fail...
 | `roc test` | ✅ Correctly FAILS |
 | `roc run` | ❌ Silently IGNORED, program runs |
 
-**Note:** Top-level expects with **hosted functions** DO work with `roc run` (see `roc-run-positive.roc`).
-Only pure function expects at top level are ignored.
+**Note:** Top-level expects with **hosted functions** fail with `roc test` (cannot evaluate at compile time) but work with `roc run`.
+Only pure function expects at top level are ignored by `roc run`.
 
 **Evidence File:** `examples/expect/roc-run-refused.roc`
+
+### Complete Asymmetry: `roc test` vs `roc run`
+
+The two commands run **completely disjoint sets** of expects:
+
+| Expect location | Function type | `roc test` | `roc run` |
+|-----------------|---------------|------------|-----------|
+| Top-level | Pure | ✅ Runs | ❌ Ignores |
+| Top-level | Hosted | ❌ Fails (un Evaluatable) | ✅ Runs |
+| In-function | Pure | ❌ Ignores | ✅ Runs |
+| In-function | Hosted | ❌ Ignores | ✅ Runs |
+
+**Key insight:** There is no overlap - `roc test` only runs top-level pure expects. Everything else is either ignored or fails.
 
 ---
 
@@ -325,7 +339,7 @@ Need to test something?
 | **Error detail** | Minimal (file:line) | Full expression shown |
 | **Use case** | Unit tests | Integration/runtime assertions |
 | **Can test FFI?** | ❌ No | ✅ Yes |
-| **Optimization** | Removed in `--optimize` | Removed in `--optimize` |
+| **Optimization** | Removed in `--optimize` (when implemented) | Removed in `--optimize` (when implemented) |
 
 ---
 
@@ -385,12 +399,7 @@ Run: `roc test/platform.roc`
 
 ### Not Yet Tested
 
-1. **Optimization verification**
-   - How to verify `--optimize` removes expects?
-   - Binary size comparison?
-   - Runtime behavior test?
-
-2. **Import behavior**
+1. **Import behavior**
    - "as well as all the files they `import`" - what does this mean?
    - Do top-level expects in imported modules run?
    - Circular imports?
@@ -407,11 +416,11 @@ Run: `roc test/platform.roc`
 
 ## Conclusions
 
-1. **Two distinct testing modes:** Compile-time (pure) vs runtime (hosted)
-2. **Clear separation:** Pure functions = `roc test`, hosted functions = `roc run`
-3. **Different error formats:** Minimal at compile-time, detailed at runtime
-4. **Failure behavior:** Compile-time continues, runtime crashes
-5. **Both optimize away:** Removed in `--optimize` builds (zero production cost)
+1. **Complete asymmetry:** `roc test` runs top-level pure expects only; `roc run` runs in-function expects (pure or hosted)
+2. **No overlap:** The two commands test completely disjoint code - nothing is tested by both
+3. **Different error formats:** Minimal at compile-time (file:line), detailed at runtime (full expression)
+4. **Failure behavior:** Compile-time continues and reports all failures; runtime crashes immediately
+5. **Optimization not yet implemented:** Runtime expects still fire in `--opt` builds (new compiler optimization pending)
 
 **Recommendation:** Use `roc test` for pure function unit tests, use in-function expects for runtime/integration testing of hosted functions.
 
