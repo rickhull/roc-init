@@ -65,9 +65,8 @@ Your Roc application needs a platform for I/O. Two immediate options:
 | **Template** | Built-in | Learning, simple scripts |
 | **Basic-CLI** | `just basic-cli` | Real applications (files, network) |
 
-Just run `roc main.roc` to start with the default (Zig) built-in template.
-`main.roc` is a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).
-If you prefer Rust to Zig, try `roc examples/rust-platform.roc`: same behavior.
+Execute `roc main.roc` to run "hello world" against the default platform: a zero-setup remotely hosted Zig platform, built from a simple template.  `main.roc` is merely a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).
+If you prefer Rust to Zig, try `roc examples/rust-platform.roc`: same behavior on a slightly different platform.
 
 To access files or the network, you need [`basic-cli`](https://github.com/roc-lang/basic-cli). Run `just basic-cli` to build the platform, and then `roc examples/basic-cli.roc` to run against it.
 
