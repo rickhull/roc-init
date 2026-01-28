@@ -58,7 +58,7 @@ You can optionally install the skill at the project level with `just skill-insta
 
 ### Choose A Platform
 
-Your Roc application needs a platform for I/O. Two immediate options:
+Your Roc application needs a platform for I/O. Three immediate options:
 
 | Platform | Setup | Use For |
 |----------|-------|---------|
@@ -66,7 +66,7 @@ Your Roc application needs a platform for I/O. Two immediate options:
 | **Rust Template** | Pre-built | Learning, simple scripts |
 | **Basic-CLI** | `just basic-cli` | Real applications (files, network) |
 
-Execute `roc main.roc` to run "hello world" against the default platform: a zero-setup remotely hosted Zig platform, built from a simple template.  `main.roc` is merely a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc). If you prefer Rust to Zig, try `roc examples/rust-platform.roc`: same behavior on a slightly different platform.
+Execute `roc main.roc` to run "hello world" against the default platform: a zero-setup remotely hosted Zig platform, built from a simple template.  `main.roc` is merely a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc). If you prefer Rust to Zig, try `roc examples/rust-platform.roc`: same behavior on a slightly different platform.  These `.roc` files consist mostly of a platform target (remote, Zig or Rust) and a main function (output "hello world").
 
 To access files or the network, you need [`basic-cli`](https://github.com/roc-lang/basic-cli). Run `just basic-cli` to build the platform, and then `roc examples/basic-cli.roc` to run against it.
 
