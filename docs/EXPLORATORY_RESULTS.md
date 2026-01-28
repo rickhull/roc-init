@@ -2,7 +2,7 @@
 
 > **Experimental Verification:** 2025-01-27
 >
-> All findings confirmed via test files in `examples/roc-*.roc`
+> All findings confirmed via test files in `examples/expect/`
 
 ---
 
@@ -52,9 +52,9 @@ We performed exploratory testing to answer: **How does `expect` behave in differ
 
 ```
 Ran 3 test(s): 0 passed, 3 failed in 2.9ms
-FAIL: examples/roc-test-neg.roc:17
-FAIL: examples/roc-test-neg.roc:20
-FAIL: examples/roc-test-neg.roc:26
+FAIL: examples/expect/roc-test-neg.roc:17
+FAIL: examples/expect/roc-test-neg.roc:20
+FAIL: examples/expect/roc-test-neg.roc:26
 ```
 
 **Characteristics:**
