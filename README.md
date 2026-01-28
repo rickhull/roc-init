@@ -1,6 +1,6 @@
 # roc-init
 
-A **Roc** programming language template and learning environment. [Roc](https://roc-lang.org/) is a modern functional programming language with strong static typing. This repository serves as a starting point for Roc projects that target the relatively-unsupported, bleeding-edge "new Roc compiler".
+This project provides tools for getting your first [**Roc**](https://roc-lang.org/) program or environment up and running. Roc is a modern functional programming language with strong static typing. This repository serves as a starting point for Roc projects that target the relatively-unsupported, bleeding-edge "new Roc compiler".
 
 ## New Roc Compiler
 
@@ -26,7 +26,7 @@ roc run main.roc
 roc build main.roc && ./main
 ```
 
-**Tip:** [`main.roc`](main.roc) is a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).
+*Tip:* [`main.roc`](main.roc) is a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).
 
 ### Editor Support ###
 
@@ -36,7 +36,7 @@ Roc includes an experimental LSP server. Configure your editor to use `roc exper
 
 ### Nix Users
 
-**For Nix users:** clone [`roc-lang/roc`](https://github.com/roc-lang/roc) and from within: `nix develop ./src` targeting [`src/flake.nix`](https://github.com/roc-lang/roc/blob/main/src/flake.nix).  **Otherwise:**
+*For Nix users:* clone [`roc-lang/roc`](https://github.com/roc-lang/roc) and from within: `nix develop ./src` targeting [`src/flake.nix`](https://github.com/roc-lang/roc/blob/main/src/flake.nix).  *Otherwise:*
 
 ### Just Commands
 
