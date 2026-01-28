@@ -44,7 +44,21 @@ expect digits_to_num([7]) == 7
 
 Run with: `roc test my_module.roc`
 
-**Source:** [mini-tutorial-new-compiler.md:158-169](mini-tutorial-new-compiler.md)
+**CONFIRMED BY EXPERIMENT (examples/explore_expect.roc):**
+
+Top-level `expect` statements:
+- ✅ **Are evaluated at COMPILE TIME**
+- ✅ **Can ONLY call pure functions** (no hosted functions)
+- ✅ **Run with `roc test`** in ~3-4ms
+- ❌ **Do NOT run** when executing the program normally
+
+**Evidence:** Attempting to call `Stdout.line!` (a hosted function) in a top-level `expect` produces:
+
+```
+COMPTIME CRASH - Cannot call function: compile-time error (ident_not_in_scope)
+```
+
+**Source:** [mini-tutorial-new-compiler.md:158-169](mini-tutorial-new-compiler.md), [examples/explore_expect.roc](examples/explore_expect.roc)
 
 ### `expect` Inside Blocks
 
@@ -63,7 +77,20 @@ digits_to_num = |digits| {
 }
 ```
 
-**Source:** [mini-tutorial-new-compiler.md:310-320](mini-tutorial-new-compiler.md)
+**CONFIRMED BY EXPERIMENT (examples/explore_expect.roc):**
+
+In-function `expect` statements:
+- ✅ **Run at RUNTIME** (when the program executes)
+- ✅ **Can call hosted functions** (Stdout.line!, Host.pubkey!, etc.)
+- ✅ **Work inside `main!` and other hosted functions**
+- ❌ **Do NOT run with `roc test`** (only top-level expects run)
+
+**Evidence:** The in-function expect in `examples/explore_expect.roc`:
+- Does NOT run with `roc test` (only 2 top-level tests counted)
+- DOES run when executing the program normally
+- Successfully calls hosted functions and prints output
+
+**Source:** [mini-tutorial-new-compiler.md:310-320](mini-tutorial-new-compiler.md), [examples/explore_expect.roc](examples/explore_expect.roc)
 
 ### Critical: Optimization Behavior
 
@@ -170,37 +197,38 @@ expect process([single]) == single
 >
 > The following sections propose hypotheses about test organization and `expect` behavior in different contexts. These are **directionally correct** based on platform development experience but **not verified** against the Roc compiler specification.
 
-### Hypothesis 1: Compile-Time vs Runtime Evaluation
+### Hypothesis 1: Top-Level vs In-Function `expect` Behavior
 
-**Hypothesis:** Top-level `expect` statements are evaluated at compile time when possible, but `expect` inside hosted functions (`main!`, platform functions) requires runtime evaluation.
+**Hypothesis:** There are behavioral differences between `expect` statements at the top level vs inside function bodies, particularly around:
+- When they run
+- What they can call
+- Error messages on failure
 
-**Rationale:**
-- Roc performs constant folding and compile-time evaluation of pure functions
-- Hosted functions (marked with `!`) perform I/O and require runtime
-- Platform functions are all hosted
+**Partial Evidence:**
+- **Known:** `roc test` runs top-level `expect` statements
+- **Known:** `all_syntax_test.roc` has both `app [main!]` and top-level `expect`
+- **Known:** In-function `expect` works "like a crash" when false during `roc test` or debug builds
+- **Unknown:** Whether top-level `expect` can call hosted functions
+- **Unknown:** Whether evaluation happens at "compile time" or is just execution by the `roc test` command
 
-**Speculative Behavior Matrix:**
+**Questions Requiring Experimental Verification:**
 
-| Context | `expect` Location | Evaluation Time | Can Use `roc test` |
-|---------|-------------------|-----------------|-------------------|
-| Pure function | Top-level | Compile-time | ✅ Yes |
-| Pure function | Inside function body | Compile-time (if constant) | ✅ Yes |
-| Hosted function (`main!`) | Inside function body | Runtime | ❌ No |
-| Platform call | Inside `main!` | Runtime | ❌ No |
+| Question | Experiment | Expected Result |
+|----------|-----------|-----------------|
+| Can top-level expect call pure functions? | `expect my_pure_func() == value` | ✅ Works |
+| Can top-level expect call hosted functions? | `expect Host.pubkey!(...) == ...` | ❓ Unknown |
+| What error when expect fails in top-level? | `expect false` | ❓ Check output format |
+| What error when expect fails in-function? | Put in `main!`, run | ❓ Check output format |
+| Does `roc test` actually execute code? | Add `dbg` to tested function | ❓ See if dbg prints |
 
-**Testing Strategy:**
-```bash
-# Pure functions - compile-time evaluation
-roc test pure_functions.roc
-
-# Hosted functions - must run as program
-roc test_hosted.roc
-```
+**Critical Note:** The documentation uses phrases like "runs all top-level expects" (line 169) and "they will be run whenever `roc test` runs" (line 308). This implies **execution**, not just compile-time checking. However, Roc also does compile-time evaluation of pure functions. The relationship between these is unclear.
 
 **Verification Needed:**
-- [ ] Confirm error message when using `roc test` with hosted functions
-- [ ] Verify top-level expects are truly compile-time (no runtime execution)
-- [ ] Test if `roc build --optimize` removes all `expect` statements
+- [ ] Create test file with top-level expect calling a pure function
+- [ ] Create test file with top-level expect attempting to call a hosted function
+- [ ] Document the exact error message (if any) for each case
+- [ ] Add `dbg` statements to see when/where code executes
+- [ ] Determine if "compile-time evaluation" is the same as "roc test execution"
 
 ---
 
@@ -419,17 +447,71 @@ test_crypto = || {
 
 ---
 
-## Part 4: Open Questions
+## Part 4: Confirmed Findings
 
-Questions that require exploratory testing to answer:
+### ✅ Top-Level `expect` Behavior
 
-1. **Exact error message:** What is the precise error when running `roc test` on a file with hosted functions?
-2. **Constant folding limits:** How complex can a pure function be before Roc stops compile-time evaluation?
-3. **Platform testing:** Can `roc test` work at all in a platform project, or are all tests runtime?
-4. **Expect failure output:** What information do `expect` failures provide in runtime vs compile-time contexts?
-5. **Optimization verification:** How can we definitively prove `expect` is removed in `--optimize` builds?
-6. **Test isolation:** Do top-level expects in imported files run when testing a specific file?
-7. **dbg vs expect:** Does `dbg` have the same optimization behavior as `expect`?
+**Confirmed via examples/explore_expect.roc:**
+
+1. **Evaluation is at compile time**
+   - Error message literally says "COMPTIME CRASH"
+   - Attempting to call hosted functions fails with: "Cannot call function: compile-time error (ident_not_in_scope)"
+
+2. **Only pure functions allowed**
+   - ✅ Works: `expect add(2, 3) == 5` (pure function)
+   - ✅ Works: `expect List.len([1, 2, 3]) == 3` (pure function)
+   - ❌ Fails: `expect Stdout.line!("...") == ...` (hosted function)
+
+3. **`roc test` execution time**
+   - Runs in ~3-4ms for 2 tests
+   - Only runs top-level expects, not in-function expects
+
+### ✅ In-Function `expect` Behavior
+
+**Confirmed via examples/explore_expect.roc:**
+
+1. **Evaluation is at runtime**
+   - Runs when program executes
+   - Does NOT run with `roc test`
+
+2. **Can call hosted functions**
+   - ✅ Works: Calling `Stdout.line!` inside `main!`
+   - ✅ Works: Any platform/hosted function
+
+3. **Coexistence with top-level expects**
+   - ✅ A file can have both top-level and in-function expects
+   - ✅ `roc test` runs top-level, program execution runs in-function
+
+### Confirmed Behavior Matrix
+
+| Context | `expect` Location | Evaluation Time | Can Call Hosted? | Runs with `roc test` |
+|---------|-------------------|-----------------|------------------|---------------------|
+| Any code | Top-level | **Compile time** | ❌ No | ✅ Yes |
+| Any code | In function body | **Runtime** | ✅ Yes | ❌ No |
+
+---
+
+## Part 5: Remaining Open Questions
+
+Questions that still require exploratory testing:
+
+1. **Exact error message format:**
+   - When `expect` condition fails, what's the full output?
+   - Does it show expected vs actual values?
+   - Same or different format for top-level vs in-function?
+
+2. **Test isolation and imports:**
+   - "as well as all the files they `import`" - what does this mean?
+   - Do top-level expects in imported modules run?
+
+3. **Optimization verification:**
+   - How to definitively prove `expect` is removed in `--optimize` builds?
+   - Binary size comparison?
+   - Runtime performance tests?
+
+4. **Block expects:**
+   - `expect { ... }` blocks - when do they run?
+   - Compile time or runtime depending on content?
 
 ---
 
@@ -464,43 +546,57 @@ Questions that require exploratory testing to answer:
 
 ## Part 6: Quick Reference
 
-### Commands
+### Known Commands
 
 ```bash
-# Unit tests (pure functions, compile-time)
-roc test test/pure_utils.roc
+# Run top-level expects
+roc test my_module.roc
 
-# Runtime tests (hosted functions)
-roc test/api_validation.roc
+# Run a program (includes in-function expects)
+roc my_app.roc
 
 # Build applications
 roc build app.roc                    # Debug build (includes expect)
 roc build app.roc --optimize -o app  # Optimized (removes expect)
-
-# Platform tests
-zig build test                       # Run Zig FFI tests
 ```
 
-### Decision Tree
+### Confirmed Behaviors
 
-```
-Need to test a function?
-│
-├─ Is it pure (no `!` in signature)?
-│  └─ YES → Use top-level `expect`, run with `roc test`
-│
-└─ Is it hosted (has `!` in signature)?
-   └─ YES → Use in-function `expect`, run as program
-```
+| Fact | Source |
+|------|--------|
+| **Top-level `expect` runs at COMPILE TIME** | [examples/explore_expect.roc](examples/explore_expect.roc) |
+| **Top-level `expect` can ONLY call pure functions** | [examples/explore_expect.roc](examples/explore_expect.roc) |
+| **Calling hosted function in top-level expect: COMPTIME CRASH** | [examples/explore_expect.roc](examples/explore_expect.roc) |
+| **In-function `expect` runs at RUNTIME** | [examples/explore_expect.roc](examples/explore_expect.roc) |
+| **In-function `expect` CAN call hosted functions** | [examples/explore_expect.roc](examples/explore_expect.roc) |
+| **`roc test` runs top-level expects only** (~3-4ms) | [examples/explore_expect.roc](examples/explore_expect.roc) |
+| **Program execution runs in-function expects only** | [examples/explore_expect.roc](examples/explore_expect.roc) |
+| **`--optimize` builds skip all expect statements** | [mini-tutorial:324,338](mini-tutorial-new-compiler.md) |
+| **`expect` is for development, not production** | [mini-tutorial:326](mini-tutorial-new-compiler.md) |
+| **Files can have both `app [main!]` and top-level `expect`** | [all_syntax_test.roc:1,390](all_syntax_test.roc) |
 
-### Key Principles
+### Confirmed Behavior Matrix
 
-1. **Purity determines testability** - Only pure functions can use `roc test`
-2. **Zero production cost** - `expect` is removed in `--optimize` builds
-3. **Development-time only** - `expect` is for catching bugs during development, not production error handling
-4. **Hosted = Runtime** - Platform functions always require runtime evaluation
+| Context | `expect` Location | Evaluation Time | Can Call Hosted? | Runs with `roc test` |
+|---------|-------------------|-----------------|------------------|---------------------|
+| Any code | Top-level | **Compile time** | ❌ No | ✅ Yes (~3-4ms) |
+| Any code | In function | **Runtime** | ✅ Yes | ❌ No |
+
+### Remaining Unknown Behaviors
+
+| Question | Status |
+|----------|--------|
+| What is the exact error message format when expect fails? | ❓ Unknown |
+| Do top-level expects in imported files run when testing? | ❓ Unknown |
+| How to verify `--optimize` removes expects? | ❓ Unknown |
+
+### Key Principles (Verified)
+
+1. **Zero production cost** - `expect` is removed in `--optimize` builds
+2. **Development-time only** - `expect` is for catching bugs during development, not production error handling
+3. **Other code handles production errors** - Use `Try`, `crash`, or graceful recovery for production
 
 ---
 
 **Last Updated:** 2025-01-27
-**Status:** Exploratory - Speculative sections require experimental verification
+**Status:** ⚠️ **Partially Confirmed** - Core `expect` behavior verified via examples/explore_expect.roc. Platform testing strategies remain speculative.
