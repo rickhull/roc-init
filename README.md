@@ -34,9 +34,7 @@ Roc includes an experimental LSP server. Configure your editor to use `roc exper
 
 ## Slow Start
 
-### Nix Users
-
-*For Nix users:* clone [`roc-lang/roc`](https://github.com/roc-lang/roc) and from within: `nix develop ./src` targeting [`src/flake.nix`](https://github.com/roc-lang/roc/blob/main/src/flake.nix).  *Otherwise:*
+*For Nix users:* clone [`roc-lang/roc`](https://github.com/roc-lang/roc) and from within: `nix develop ./src` targeting `src/flake.nix`.  *Otherwise:*
 
 ### Just Commands
 
