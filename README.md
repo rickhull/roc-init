@@ -54,14 +54,16 @@ You can optionally install the skill at the project level with `just skill-insta
 
 ### Choose A Platform
 
-Your Roc application needs a platform for I/O. Two options:
+Your Roc application needs a platform for I/O. Two immediate options:
 
 | Platform | Setup | Use For |
 |----------|-------|---------|
 | **Template** | Built-in | Learning, simple scripts |
 | **Basic-CLI** | `just basic-cli` | Real applications (files, network) |
 
-Just run `roc main.roc` to start with the built-in template. Need files or network? Run `just basic-cli` first.
+Just run `roc main.roc` to start with the default (Zig) built-in template. `main.roc` is a symlink to examples/zig-template.roc.  If you prefer Rust to Zig, try `roc examples/rust-template.roc`; same behavior.
+
+To access files or the network, you need `basic-cli`; run `just basic-cli` to build it, and then `roc examples/basic-cli.roc` to run against it.
 
 *See [Platform Details](#platform-details) below for more information.*
 
