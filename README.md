@@ -4,7 +4,7 @@ This project provides tools for getting your first [**Roc**](https://roc-lang.or
 
 ## New Roc Compiler
 
-The new Roc compiler is implemented in Zig, replacing Rust's role in the old Roc compiler.  Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Not only has the compiler changed but also some language fundamentals. Always refer to the local [`docs/`](docs/) files or use the [`roc-language`](skills/roc-language/) skill for authoritative syntax and API reference.
+The new Roc compiler is implemented in [Zig](https://ziglang.org/), replacing [Rust](https://www.rust-lang.org/)'s role in the old Roc compiler.  Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Not only has the compiler changed but also some language fundamentals. Always refer to the local [`docs/`](docs/) files or use the [`roc-language`](skills/roc-language/) skill for authoritative syntax and API reference.
 
 ## Quick Start
 
