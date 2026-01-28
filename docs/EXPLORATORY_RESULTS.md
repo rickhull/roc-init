@@ -25,13 +25,13 @@ We performed exploratory testing to answer: **How does `expect` behave in differ
 
 | File | Command | Purpose | Tests |
 |------|---------|---------|-------|
-| `examples/expect/roc-test-pos.roc` | `roc test` | Compile-time, all pass | 7 tests ✅ |
-| `examples/expect/roc-test-neg.roc` | `roc test` | Compile-time, show errors | 3 failures ❌ |
-| `examples/expect/roc-run-pos.roc` | `roc run` | Runtime, all pass | 5 tests ✅ |
-| `examples/expect/roc-run-neg.roc` | `roc run` | Runtime, show errors | Stops at first ❌ |
-| `examples/expect/roc-run-neg-a.roc` | `roc run` | Runtime: simple fail | 1 test ❌ |
-| `examples/expect/roc-run-neg-b.roc` | `roc run` | Runtime: block fail | 1 test ❌ |
-| `examples/expect/roc-run-neg-c.roc` | `roc run` | Runtime: "weirdos" | Refused/rejected tests 🤔 |
+| `examples/expect/roc-test-positive.roc` | `roc test` | Compile-time, all pass | 7 tests ✅ |
+| `examples/expect/roc-test-negative.roc` | `roc test` | Compile-time, show errors | 3 failures ❌ |
+| `examples/expect/roc-test-refused.roc` | `roc test` | In-function expects ignored | 0 tests ⏭️ |
+| `examples/expect/roc-run-positive.roc` | `roc run` | Runtime, all pass | 6 tests ✅ (incl. top-level hosted expect) |
+| `examples/expect/roc-run-negative.roc` | `roc run` | Runtime, show errors | Stops at first ❌ |
+| `examples/expect/roc-run-negative-skipped.roc` | `roc run` | Runtime: skipped test | Block failure (run in isolation) ⏭️ |
+| `examples/expect/roc-run-refused.roc` | `roc run` | Runtime: refused | Top-level pure expects ignored 🤔 |
 
 ---
 
@@ -45,16 +45,17 @@ We performed exploratory testing to answer: **How does `expect` behave in differ
 - ❌ Cannot call hosted functions (COMPTIME CRASH if attempted)
 
 ### Evidence Files
-- `examples/expect/roc-test-pos.roc` - 7 passing tests
-- `examples/expect/roc-test-neg.roc` - 3 failing tests
+- `examples/expect/roc-test-positive.roc` - 7 passing tests
+- `examples/expect/roc-test-negative.roc` - 3 failing tests
+- `examples/expect/roc-test-refused.roc` - shows `roc test` ignores in-function expects (0 tests)
 
 ### Error Message Format (Compile-Time Failures)
 
 ```
 Ran 3 test(s): 0 passed, 3 failed in 2.9ms
-FAIL: examples/expect/roc-test-neg.roc:17
-FAIL: examples/expect/roc-test-neg.roc:20
-FAIL: examples/expect/roc-test-neg.roc:26
+FAIL: examples/expect/roc-test-negative.roc:17
+FAIL: examples/expect/roc-test-negative.roc:20
+FAIL: examples/expect/roc-test-negative.roc:26
 ```
 
 **Characteristics:**
@@ -113,11 +114,10 @@ COMPTIME CRASH - Cannot call function: compile-time error (ident_not_in_scope)
 - ⚠️ **Stops execution immediately on failure** (crash behavior)
 
 ### Evidence Files
-- `examples/expect/roc-run-pos.roc` - 5 passing tests
-- `examples/expect/roc-run-neg.roc` - shows crash behavior
-- `examples/expect/roc-run-neg-a.roc` - simple failure
-- `examples/expect/roc-run-neg-b.roc` - block failure
-- `examples/expect/roc-run-neg-c.roc` - the "weirdos" (refused/rejected)
+- `examples/expect/roc-run-positive.roc` - 6 passing tests (including top-level hosted expect)
+- `examples/expect/roc-run-negative.roc` - shows crash behavior (stops at Test A)
+- `examples/expect/roc-run-negative-skipped.roc` - Test B run in isolation (block failure)
+- `examples/expect/roc-run-refused.roc` - top-level pure expects ignored by `roc run`
 
 ### Error Message Format (Runtime Failures)
 
@@ -177,18 +177,11 @@ main! = |_args| {
 
 ### Critical Behavior: Failure Stops Execution
 
-Runtime expects stop immediately on failure. This is why `roc-run-neg.roc` only runs Test A.
+Runtime expects stop immediately on failure. This is why `roc-run-negative.roc` only runs Test A.
 
 **Result:** Subsequent tests (B, C) never execute when an earlier expect fails.
 
-### The "Weirdos": Refused/Rejected Tests
-
-Some expects don't behave as expected when using `roc run`:
-
-| Behavior | `roc test` | `roc run` | Example |
-|----------|-----------|-----------|---------|
-| Top-level expect | ✅ Evaluated | ❌ Silently ignored | `expect add(1,2) == 100` passes with `run`! |
-| Hosted function at top-level | ❌ COMPTIME CRASH | ❌ COMPTIME CRASH | `expect Stdout.line!("test") == Bool.True` |
+### The "Weirdo": Top-Level Pure Expects Ignored
 
 **Weirdo #1: Silent Ignoring**
 ```roc
@@ -196,19 +189,15 @@ Some expects don't behave as expected when using `roc run`:
 expect add(1, 2) == 100  # Wrong! Should fail...
 ```
 
-- `roc test`: Correctly FAILS ✅
-- `roc run`: Silently IGNORED, program runs successfully ❌
+| Command | Behavior |
+|---------|----------|
+| `roc test` | ✅ Correctly FAILS |
+| `roc run` | ❌ Silently IGNORED, program runs |
 
-**Weirdo #2: Compile-Time Crash**
-```roc
-# At top level of file
-expect Stdout.line!("test") == Bool.True  # Hosted function!
-```
+**Note:** Top-level expects with **hosted functions** DO work with `roc run` (see `roc-run-positive.roc`).
+Only pure function expects at top level are ignored.
 
-- Both `roc test` and `roc run`: **COMPTIME CRASH**
-- Error: `Cannot call function: compile-time error (ident_not_in_scope)`
-
-**Evidence File:** `examples/expect/roc-run-neg-c.roc`
+**Evidence File:** `examples/expect/roc-run-refused.roc`
 
 ---
 
@@ -312,15 +301,15 @@ Need to test something?
 
 | Fact | Evidence |
 |------|----------|
-| Top-level `expect` = compile time | `roc-test-pos.roc` runs in 8ms |
+| Top-level `expect` = compile time | `roc-test-positive.roc` runs in 8ms |
 | Top-level `expect` = pure functions only | Attempting `Stdout.line!` causes COMPTIME CRASH |
-| In-function `expect` = runtime | `roc-run-pos.roc` executes and prints |
-| In-function `expect` can call hosted | `roc-run-pos.roc` calls `Stdout.line!` successfully |
-| `roc test` only runs top-level expects | `roc-test-pos.roc` has `main!` but it's not executed |
-| `roc run` only runs in-function expects | `roc-run-pos.roc` top-level expects not counted |
-| Compile-time error format = minimal | `roc-test-neg.roc` shows only file:line |
+| In-function `expect` = runtime | `roc-run-positive.roc` executes and prints |
+| In-function `expect` can call hosted | `roc-run-positive.roc` calls `Stdout.line!` successfully |
+| `roc test` only runs top-level expects | `roc-test-positive.roc` has `main!` but it's not executed |
+| `roc run` only runs in-function expects | `roc-run-positive.roc` top-level expects not counted |
+| Compile-time error format = minimal | `roc-test-negative.roc` shows only file:line |
 | Runtime error format = detailed | `roc-run-neg-*.roc` shows full expressions |
-| Runtime failures stop execution | `roc-run-neg.roc` stops at Test A, B/C never run |
+| Runtime failures stop execution | `roc-run-negative.roc` stops at Test A, B/C never run |
 | Block expects work both ways | Both test files use block expects successfully |
 
 ---

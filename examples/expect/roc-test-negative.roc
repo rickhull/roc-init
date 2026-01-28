@@ -1,9 +1,9 @@
-# roc-test-neg.roc
+# roc-test-negative.roc
 #
 # Negative tests for `roc test` command (compile-time behavior)
 # All expects should FAIL to show error message format
 #
-# Run: roc test examples/roc-test-neg.roc
+# Run: roc test examples/expect/roc-test-negative.roc
 
 app [main!] { pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-zig/releases/download/0.6/2BfGn4M9uWJNhDVeMghGeXNVDFijMfPsmmVeo6M4QjKX.tar.zst" }
 

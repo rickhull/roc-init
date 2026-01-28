@@ -1,9 +1,9 @@
-# roc-run-pos.roc
+# roc-run-positive.roc
 #
 # Positive tests for `roc run` command (runtime behavior)
 # All expects should PASS
 #
-# Run: roc examples/roc-run-pos.roc
+# Run: roc examples/expect/roc-run-positive.roc
 
 app [main!] { pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-zig/releases/download/0.6/2BfGn4M9uWJNhDVeMghGeXNVDFijMfPsmmVeo6M4QjKX.tar.zst" }
 
@@ -12,6 +12,10 @@ import pf.Stdout
 # Pure function for testing
 add : I64, I64 -> I64
 add = |a, b| a + b
+
+# Top-level expect with hosted function - passes with roc run
+# Note: roc test would FAIL (can't call hosted at compile time)
+expect Stdout.line!("Top-level: hosted function in expect") == {}
 
 main! = |_args| {
     Stdout.line!("=== Runtime Expect Tests (Positive) ===")

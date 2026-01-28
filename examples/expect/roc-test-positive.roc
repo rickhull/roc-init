@@ -1,9 +1,9 @@
-# roc-test-pos.roc
+# roc-test-positive.roc
 #
 # Positive tests for `roc test` command (compile-time behavior)
 # All expects should PASS
 #
-# Run: roc test examples/roc-test-pos.roc
+# Run: roc test examples/expect/roc-test-positive.roc
 
 app [main!] { pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-zig/releases/download/0.6/2BfGn4M9uWJNhDVeMghGeXNVDFijMfPsmmVeo6M4QjKX.tar.zst" }
 
