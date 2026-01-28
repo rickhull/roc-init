@@ -4,7 +4,7 @@ A **Roc** programming language template and learning environment. [Roc](https://
 
 ## New Roc Compiler
 
-This project focuses on the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Always refer to the local `docs/` files or use the `roc-language` skill for authoritative syntax and API reference.
+This project focuses on the new Zig-based Roc compiler (released late 2024/early 2025). Much of the online documentation at https://roc-lang.org/ is outdated and refers to the old compiler. Always refer to the local [`docs/`](docs/) files or use the [`roc-language`](skills/roc-language/) skill for authoritative syntax and API reference.
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ just install-roc
 just update-docs
 
 # Run the application
-roc main.roc
+roc [`main.roc`](main.roc)
 ```
 
 ### Editor Support ###
@@ -34,7 +34,7 @@ Otherwise:
 
 ### Just Commands
 
-In order to use "just commands" (from the `justfile`, like a `Makefile`), you need to have [Just](https://just.systems/) installed.
+In order to use "just commands" (from the [`justfile`](justfile), like a `Makefile`), you need to have [Just](https://just.systems/) installed.
 
 ### Install Roc
 
@@ -46,7 +46,7 @@ In order to use "just commands" (from the `justfile`, like a `Makefile`), you ne
 
 ### Roc-language Skill
 
-There is a claude-native [skill](skills/roc-language/) provided that will read docs provided by this project (`roc-init`) as well as from upstream Roc (`roc-lang/roc`).
+There is a claude-native [skill](skills/roc-language/) provided that will read docs provided by this project (`roc-init`) as well as from upstream [roc-lang/roc](https://github.com/roc-lang/roc).
 
 `just update-docs` will fetch the latest Roc docs and then install the skill at the user level: `~/.claude/skills/roc-language/`
 
@@ -61,9 +61,12 @@ Your Roc application needs a platform for I/O. Two immediate options:
 | **Template** | Built-in | Learning, simple scripts |
 | **Basic-CLI** | `just basic-cli` | Real applications (files, network) |
 
-Just run `roc main.roc` to start with the default (Zig) built-in template. `main.roc` is a symlink to examples/zig-template.roc.  If you prefer Rust to Zig, try `roc examples/rust-template.roc`; same behavior.
+Just run `roc main.roc` to start with the default (Zig) built-in template.
+`main.roc` is a symlink to [`examples/zig-template.roc`](examples/zig-template.roc).
+If you prefer Rust to Zig, try `roc examples/rust-template.roc`; same behavior.
 
-To access files or the network, you need `basic-cli`; run `just basic-cli` to build it, and then `roc examples/basic-cli.roc` to run against it.
+To access files or the network, you need [`basic-cli`](https://github.com/roc-lang/basic-cli);
+run `just basic-cli` to build it, and then `roc examples/basic-cli.roc` to run against it.
 
 *See [Platform Details](#platform-details) below for more information.*
 
