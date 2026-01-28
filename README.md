@@ -26,7 +26,7 @@ roc run main.roc
 roc build main.roc && ./main
 ```
 
-*Tip: [`main.roc`](main.roc) is a symlink to [`examples/zig-template.roc`](examples/zig-template.roc).*
+*Tip: [`main.roc`](main.roc) is a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).*
 
 ### Editor Support ###
 
@@ -70,8 +70,8 @@ Your Roc application needs a platform for I/O. Two immediate options:
 | **Basic-CLI** | `just basic-cli` | Real applications (files, network) |
 
 Just run `roc main.roc` to start with the default (Zig) built-in template.
-`main.roc` is a symlink to [`examples/zig-template.roc`](examples/zig-template.roc).
-If you prefer Rust to Zig, try `roc examples/rust-template.roc`: same behavior.
+`main.roc` is a symlink to [`examples/zig-platform.roc`](examples/zig-platform.roc).
+If you prefer Rust to Zig, try `roc examples/rust-platform.roc`: same behavior.
 
 To access files or the network, you need [`basic-cli`](https://github.com/roc-lang/basic-cli). Run `just basic-cli` to build the platform, and then `roc examples/basic-cli.roc` to run against it.
 
@@ -100,7 +100,8 @@ e.g. `just install-roc`
 - `roc main.roc` - Run the main application
 - `roc run main.roc` - Same as above (`run` is default subcommand)
 - `roc build main.roc` - Build an executable
-- `roc test` - Run tests (`expect` calls at the toplevel of `*.roc` files)
+- `roc test` - Run tests (`expect` calls at toplevel of `*.roc` files)
+  - See [`examples/expect/`](examples/expect/) for expect behavior patterns
 
 ### Documentation Management
 - `just fetch-docs` - Download latest Roc reference documentation from GitHub with ETag caching
@@ -229,19 +230,20 @@ Zed has built-in Roc support. If you need to configure it manually, add to `sett
 ```
 roc-init/
 ├── justfile             # Build automation with just commands
+├── main.roc -> examples/zig-platform.roc  (symlink)
 ├── tools/
 │   └── rocgist          # Gist sharing script
 ├── docs/                # Authoritative Roc language documentation
+├── examples/            # Example programs and expect tests
+│   ├── zig-platform.roc # Zig platform template
+│   ├── rust-platform.roc # Rust platform template
+│   └── expect/          # Comprehensive expect behavior examples
 ├── cache/               # ETag cached downloads (gitignored)
 │   ├── roc-docs/        # Cached documentation fetches
 │   └── roc-nightly/     # Cached Roc nightly builds
-├── skills/              # Claude Code skills
-│   └── roc-language/
-│       └── references/ -> ../../docs  (symlink)
-└── .claude/             # In-repo skills (auto-generated, gitignored)
-    └── skills/
-        └── roc-language/
-            └── references/  (copies from docs/)
+└── skills/              # Claude Code skills
+    └── roc-language/
+        └── references/ -> ../../docs  (symlink)
 ```
 
 ## Documentation
