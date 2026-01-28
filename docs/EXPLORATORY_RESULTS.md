@@ -31,7 +31,7 @@ We performed exploratory testing to answer: **How does `expect` behave in differ
 | `examples/expect/roc-run-neg.roc` | `roc run` | Runtime, show errors | Stops at first ❌ |
 | `examples/expect/roc-run-neg-a.roc` | `roc run` | Runtime: simple fail | 1 test ❌ |
 | `examples/expect/roc-run-neg-b.roc` | `roc run` | Runtime: block fail | 1 test ❌ |
-| `examples/expect/roc-run-neg-c.roc` | `roc run` | Runtime: fail after pass | 3 tests (1,1 pass,1 fail) ❌ |
+| `examples/expect/roc-run-neg-c.roc` | `roc run` | Runtime: "weirdos" | Refused/rejected tests 🤔 |
 
 ---
 
@@ -117,7 +117,7 @@ COMPTIME CRASH - Cannot call function: compile-time error (ident_not_in_scope)
 - `examples/expect/roc-run-neg.roc` - shows crash behavior
 - `examples/expect/roc-run-neg-a.roc` - simple failure
 - `examples/expect/roc-run-neg-b.roc` - block failure
-- `examples/expect/roc-run-neg-c.roc` - failure after passing tests
+- `examples/expect/roc-run-neg-c.roc` - the "weirdos" (refused/rejected)
 
 ### Error Message Format (Runtime Failures)
 
@@ -177,16 +177,38 @@ main! = |_args| {
 
 ### Critical Behavior: Failure Stops Execution
 
-From `roc-run-neg-c.roc`:
-```
-✓ First expect passed
-✓ Second expect passed
-expect failed: add(3, 3) == 999
+Runtime expects stop immediately on failure. This is why `roc-run-neg.roc` only runs Test A.
 
-Roc crashed: add(3, 3) == 999
+**Result:** Subsequent tests (B, C) never execute when an earlier expect fails.
+
+### The "Weirdos": Refused/Rejected Tests
+
+Some expects don't behave as expected when using `roc run`:
+
+| Behavior | `roc test` | `roc run` | Example |
+|----------|-----------|-----------|---------|
+| Top-level expect | ✅ Evaluated | ❌ Silently ignored | `expect add(1,2) == 100` passes with `run`! |
+| Hosted function at top-level | ❌ COMPTIME CRASH | ❌ COMPTIME CRASH | `expect Stdout.line!("test") == Bool.True` |
+
+**Weirdo #1: Silent Ignoring**
+```roc
+# At top level of file
+expect add(1, 2) == 100  # Wrong! Should fail...
 ```
 
-**Result:** Only 2 of 3 tests ran. Execution stopped at failure.
+- `roc test`: Correctly FAILS ✅
+- `roc run`: Silently IGNORED, program runs successfully ❌
+
+**Weirdo #2: Compile-Time Crash**
+```roc
+# At top level of file
+expect Stdout.line!("test") == Bool.True  # Hosted function!
+```
+
+- Both `roc test` and `roc run`: **COMPTIME CRASH**
+- Error: `Cannot call function: compile-time error (ident_not_in_scope)`
+
+**Evidence File:** `examples/expect/roc-run-neg-c.roc`
 
 ---
 
@@ -298,7 +320,7 @@ Need to test something?
 | `roc run` only runs in-function expects | `roc-run-pos.roc` top-level expects not counted |
 | Compile-time error format = minimal | `roc-test-neg.roc` shows only file:line |
 | Runtime error format = detailed | `roc-run-neg-*.roc` shows full expressions |
-| Runtime failures stop execution | `roc-run-neg-c.roc` stops after 2 of 3 tests |
+| Runtime failures stop execution | `roc-run-neg.roc` stops at Test A, B/C never run |
 | Block expects work both ways | Both test files use block expects successfully |
 
 ---

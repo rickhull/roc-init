@@ -2,7 +2,7 @@
 #
 # Negative test B: Block expect failure
 #
-# Run: roc examples/roc-run-neg-b.roc
+# Run: roc examples/expect/roc-run-neg-b.roc
 
 app [main!] { pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-zig/releases/download/0.6/2BfGn4M9uWJNhDVeMghGeXNVDFijMfPsmmVeo6M4QjKX.tar.zst" }
 

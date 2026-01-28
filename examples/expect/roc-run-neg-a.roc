@@ -2,7 +2,7 @@
 #
 # Negative test A: Simple expect failure
 #
-# Run: roc examples/roc-run-neg-a.roc
+# Run: roc examples/expect/roc-run-neg-a.roc
 
 app [main!] { pf: platform "https://github.com/lukewilliamboswell/roc-platform-template-zig/releases/download/0.6/2BfGn4M9uWJNhDVeMghGeXNVDFijMfPsmmVeo6M4QjKX.tar.zst" }
 
