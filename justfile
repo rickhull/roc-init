@@ -98,8 +98,8 @@ install-skill location="~":
         dest=".claude"
         echo "Installing {{skill_name}} skill in-repo..."
     else
-        dest="{{location}}/.claude"
-        echo "Installing {{skill_name}} skill to {{location}}/.claude..."
+        dest="$HOME/.claude"
+        echo "Installing {{skill_name}} skill to ~/.claude..."
     fi
 
     skill_dir="$dest/skills/{{skill_name}}"
