@@ -1,10 +1,6 @@
 ---
 name: roc-language
-description: |
-  Authoritative Roc programming language reference. When Claude needs to 
-  read, write, edit, debug, or analyze any .roc file, or understand Roc 
-  syntax, types, or compiler errors. Provides current API reference and 
-  syntax patterns using Roc compiler source as ground truth.
+description: "Authoritative Roc programming language reference. When Claude needs to read, write, edit, debug, or analyze any .roc file, or understand Roc syntax, types, or compiler errors. Provides current API reference and syntax patterns using Roc compiler source as ground truth."
 version: 1.0.0
 ---
 
@@ -15,7 +11,58 @@ version: 1.0.0
 **WARNING: Outdated Documentation Exists**
 - Many online tutorials reference the old Rust-based Roc compiler
 - Current Roc uses different builtin functions than old docs show
-- Example: `Num.to_str` does NOT exist in current Roc; use `Str.inspect` instead
+- Common old-vs-new pitfalls:
+
+| Old (Wrong) | New (Correct) | Notes |
+|-------------|---------------|-------|
+| `Num.to_str(42)` | `Str.inspect(42)` or `42.to_str()` | Builtin conversion changed |
+| `List U8` | `List(U8)` | Type params need parentheses |
+| `if x then y else z` | `if x y else z` | No `then` keyword |
+| `true` / `True` | `Bool.True` | Module-qualified for creation |
+| `Err(WasEmpty)` | `Err(ListWasEmpty)` | Error tags are more specific |
+
+## Quick Reference
+
+### App Structure
+```roc
+app [main!] { pf: platform "https://..." }
+
+import pf.Stdout
+
+main! = |_args| {
+    Stdout.line!("Hello, World!")
+    Ok({})
+}
+```
+
+### Common Patterns
+```roc
+# Effectful functions use ! and => arrow
+greet! : Str => Result({}, _)
+greet! = |name| {
+    Stdout.line!("Hello, ${name}!")
+    Ok({})
+}
+
+# Pattern matching
+match my_list.first() {
+    Ok(val) => val
+    Err(ListWasEmpty) => default_value
+}
+
+# Pure functions use -> arrow
+add : I64, I64 -> I64
+add = |a, b| a + b
+```
+
+## Debugging Roc Compiler Errors
+
+1. Read the error message — the new compiler gives specific, helpful errors
+2. Check the Critical Notes table above for old-vs-new syntax mismatches
+3. Search @references/GOTCHAS.md for the error pattern or function name
+4. Look up the correct API in @references/Builtin.roc
+5. Verify the fix compiles with `roc check <file>.roc`
+6. If check fails, return to step 2 and iterate until it passes
 
 ## Eager Load
 
