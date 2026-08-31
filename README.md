@@ -208,13 +208,18 @@ Install the official Roc extension, or add to `settings.json`:
 
 #### Zed
 
-Zed has built-in Roc support. If you need to configure it manually, add to `settings.json`:
+Zed requires an extension for Roc support, found here: https://zed.dev/extensions/roc
+
+If you need to configure it manually, add to `settings.json`:
+
 ```json
 {
   "lsp": {
     "roc": {
-      "command": "roc",
-      "arguments": ["experimental-lsp"]
+      "binary": {
+        "path": "/path/to/roc/zig-out/bin/roc"  ,
+        "arguments": ["experimental-lsp"]
+      }
     }
   }
 }
