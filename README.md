@@ -216,8 +216,10 @@ If you need to configure it manually, add to `settings.json`:
 {
   "lsp": {
     "roc": {
-      "command": "roc",
-      "arguments": ["experimental-lsp"]
+      "binary": {
+        "path": "/path/to/roc/zig-out/bin/roc"  ,
+        "arguments": ["experimental-lsp"]
+      }
     }
   }
 }
